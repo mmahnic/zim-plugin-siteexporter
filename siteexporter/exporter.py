@@ -142,6 +142,7 @@ class SiteExporter:
         for page in mkdFiles:
             if page.isPublished():
                 self.addPageIndex( page, index )
+                self.addPageStyle( page )
 
         self.makeHtml( mkdFiles )
 
@@ -157,23 +158,36 @@ class SiteExporter:
                     break
 
 
-    def getPageTemplate( self, mkdPage ):
+    # Layout file: template, css, ...
+    def _discoverLayoutFile( self, mkdPage, ext ):
         base = self.layoutPath()
 
-        # Template for specific page
-        name = ".".join( mkdPage.page.parts ) + ".html5"
+        # Layout file for a specific page
+        name = ".".join( mkdPage.page.parts ) + "." + ext
         fn = os.path.join( base, name )
         if os.path.exists( fn ):
             return fn
 
-        # Template for specific page type
+        # Layout file for a specific page type
         pageType = mkdPage.pageType
-        fn = os.path.join( base, "({}).html5".format( pageType ) )
+        fn = os.path.join( base, "({}).ext".format( pageType, ext ) )
         if os.path.exists( fn ):
             return fn
 
-        # Default template
-        return os.path.join( self.layoutPath(), "default.html5" )
+        # Default layout file
+        fn = os.path.join( base, "default.{}".format( ext ) )
+        if os.path.exists( fn ):
+            return fn
+
+        return None
+
+
+    def getPageTemplate( self, mkdPage ):
+        return self._discoverLayoutFile( mkdPage, "html5" )
+
+
+    def getPageStyleFile( self, mkdPage ):
+        return self._discoverLayoutFile( mkdPage, "css" )
 
 
     def processExportedPage( self, page ):
@@ -319,6 +333,25 @@ class SiteExporter:
         with open( page.fullFilename(), "w" ) as fout:
             fout.write( "".join( mkdLines[:yamlPos] ) )
             fout.write( "".join( yamlIndex ) )
+            fout.write( "".join( mkdLines[yamlPos:] ) )
+
+
+    def addPageStyle( self, mkdPage ):
+        style = self.getPageStyleFile( mkdPage )
+        if style is None:
+            return
+
+        curDir = os.path.dirname( mkdPage.htmlFilename )
+        def makeRelative( path ):
+            return os.path.relpath( path, curDir )
+
+        with open( mkdPage.fullFilename() ) as f:
+            mkdLines = f.readlines()
+
+        yamlPos = self._findYamlInsertionPoint( mkdLines )
+        with open( mkdPage.fullFilename(), "w" ) as fout:
+            fout.write( "".join( mkdLines[:yamlPos] ) )
+            fout.write( "main-css: {}\n".format( makeRelative( style ) ) )
             fout.write( "".join( mkdLines[yamlPos:] ) )
 
 
