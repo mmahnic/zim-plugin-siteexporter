@@ -31,6 +31,8 @@ class MarkdownPage:
         self.menuText = None
         self.pageType = "page"
         self.published = True
+        self.template = "default.html"
+        self.style = "default.css"
 
 
     def fullFilename(self):
@@ -86,7 +88,12 @@ class IndexEntry:
 
 class SiteExporter:
     def __init__(self):
+        # TODO: read from 00:00.config yaml
+        self.layout = "00:layout:simple"
         pass
+
+    def layoutPath(self):
+        return os.path.join( exportPath, *self.layout.split(":") )
 
     # from zim.export
     def build_notebook_exporter(self, dir, template, **opts):
@@ -116,8 +123,6 @@ class SiteExporter:
         mkdFiles = []
         # The iterator returns the page BEFORE it is exported :/
 	for p in exporter.export_iter(pages):
-            #~ sys.stdout.write('.')
-            #~ sys.stdout.flush()
             lwarn( "{}: {}".format( type(p), p ) )
             try:
                 page = MarkdownPage(p)
@@ -150,6 +155,25 @@ class SiteExporter:
                 if pf.page == f.page.parent:
                     f.parent = pf
                     break
+
+
+    def getPageTemplate( self, mkdPage ):
+        base = self.layoutPath()
+
+        # Template for specific page
+        name = ".".join( mkdPage.page.parts ) + ".html5"
+        fn = os.path.join( base, name )
+        if os.path.exists( fn ):
+            return fn
+
+        # Template for specific page type
+        pageType = mkdPage.pageType
+        fn = os.path.join( base, "({}).html5".format( pageType ) )
+        if os.path.exists( fn ):
+            return fn
+
+        # Default template
+        return os.path.join( self.layoutPath(), "default.html5" )
 
 
     def processExportedPage( self, page ):
@@ -302,14 +326,16 @@ class SiteExporter:
         command = [ "pandoc", "-f", "markdown+raw_html", "-t", "html5" ]
         command += [ "--standalone" ]
         command += [ "--section-divs" ]
-        command += [ "--template", os.path.join( exportPath, "00/pandoc.templates/default.html5" ) ]
 
         for page in mkdFiles:
             if not page.isPublished():
                 continue
+
+            template = self.getPageTemplate( page )
             mkdpath = page.fullFilename()
             outpath = page.fullHtmlFilename()
             filenames = ["-o",  outpath, mkdpath ]
-            lwarn( " ".join( command + filenames ) )
-            subp.call( command + filenames )
+            cmd = command + [ "--template", template ] + filenames
+            lwarn( " ".join(cmd) )
+            subp.call(cmd)
 
