@@ -19,15 +19,16 @@ class MarkdownPage:
     def __init__( self, zimPage ):
         """@p filename is relative to exportPath."""
         self.zimPage = zimPage
-        self.filename = "{}.{}".format( "/".join(zimPage.parts), mkdExtension )
-        self.htmlFilename = "{}.{}".format("/".join(zimPage.parts), htmlExtension)
+        self.path = zimPage.parts # a list of parts that compose the path
+        self.filename = "{}.{}".format( "/".join(self.path), mkdExtension )
+        self.htmlFilename = "{}.{}".format("/".join(self.path), htmlExtension)
         self.attrs = {}
         self.parent = None
 
-        self.id = ":".join( zimPage.parts )
-        self.level = len(zimPage.parts)
+        self.id = ":".join(self.path)
+        self.level = len(self.path)
         self.weight = 999999
-        self.title = zimPage.parts[-1]
+        self.title = self.path[-1]
         self.menuText = None
         self.pageType = "page"
         self.published = True
@@ -42,7 +43,7 @@ class MarkdownPage:
         return os.path.join(exportPath, self.htmlFilename)
 
     def parentId( self, levels=1 ):
-        return ":".join( self.zimPage.parts[:-levels] )
+        return ":".join( self.path[:-levels] )
 
     def setAttributes( self, attrs ):
         if type(attrs) != type({}):
@@ -54,7 +55,7 @@ class MarkdownPage:
         if "title" in attrs:
             self.title = attrs["title"]
         else:
-            self.title = self.zimPage.parts[-1]
+            self.title = self.path[-1]
 
         if "menu" in attrs:
             self.menuText = attrs["menu"]
@@ -163,7 +164,7 @@ class SiteExporter:
         base = self.layoutPath()
 
         # Layout file for a specific page
-        name = ".".join( page.zimPage.parts ) + "." + ext
+        name = ".".join( page.path ) + "." + ext
         fn = os.path.join( base, name )
         if os.path.exists( fn ):
             return fn
