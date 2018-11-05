@@ -16,18 +16,18 @@ mkdExtension = "markdown"
 htmlExtension = "html"
 
 class MarkdownPage:
-    def __init__( self, page ):
+    def __init__( self, zimPage ):
         """@p filename is relative to exportPath."""
-        self.page = page
-        self.filename = "{}.{}".format( "/".join(page.parts), mkdExtension )
-        self.htmlFilename = "{}.{}".format("/".join(page.parts), htmlExtension)
+        self.zimPage = zimPage
+        self.filename = "{}.{}".format( "/".join(zimPage.parts), mkdExtension )
+        self.htmlFilename = "{}.{}".format("/".join(zimPage.parts), htmlExtension)
         self.attrs = {}
         self.parent = None
 
-        self.id = ":".join( page.parts )
-        self.level = len(page.parts)
+        self.id = ":".join( zimPage.parts )
+        self.level = len(zimPage.parts)
         self.weight = 999999
-        self.title = page.parts[-1]
+        self.title = zimPage.parts[-1]
         self.menuText = None
         self.pageType = "page"
         self.published = True
@@ -42,7 +42,7 @@ class MarkdownPage:
         return os.path.join(exportPath, self.htmlFilename)
 
     def parentId( self, levels=1 ):
-        return ":".join( self.page.parts[:-levels] )
+        return ":".join( self.zimPage.parts[:-levels] )
 
     def setAttributes( self, attrs ):
         if type(attrs) != type({}):
@@ -54,7 +54,7 @@ class MarkdownPage:
         if "title" in attrs:
             self.title = attrs["title"]
         else:
-            self.title = self.page.parts[-1]
+            self.title = self.zimPage.parts[-1]
 
         if "menu" in attrs:
             self.menuText = attrs["menu"]
@@ -150,26 +150,26 @@ class SiteExporter:
     # copy the parent realtions from Page to MarkdownPage
     def findPageParents( self, mkdFiles ):
         for f in mkdFiles:
-            if f.page.parent is None or f.page.parent == f.page:
+            if f.zimPage.parent is None or f.zimPage.parent == f.zimPage:
                 continue
             for pf in mkdFiles:
-                if pf.page == f.page.parent:
+                if pf.zimPage == f.zimPage.parent:
                     f.parent = pf
                     break
 
 
     # Layout file: template, css, ...
-    def _discoverLayoutFile( self, mkdPage, ext ):
+    def _discoverLayoutFile( self, page, ext ):
         base = self.layoutPath()
 
         # Layout file for a specific page
-        name = ".".join( mkdPage.page.parts ) + "." + ext
+        name = ".".join( page.zimPage.parts ) + "." + ext
         fn = os.path.join( base, name )
         if os.path.exists( fn ):
             return fn
 
         # Layout file for a specific page type
-        pageType = mkdPage.pageType
+        pageType = page.pageType
         fn = os.path.join( base, "({}).ext".format( pageType, ext ) )
         if os.path.exists( fn ):
             return fn
@@ -182,12 +182,12 @@ class SiteExporter:
         return None
 
 
-    def getPageTemplate( self, mkdPage ):
-        return self._discoverLayoutFile( mkdPage, "html5" )
+    def getPageTemplate( self, page ):
+        return self._discoverLayoutFile( page, "html5" )
 
 
-    def getPageStyleFile( self, mkdPage ):
-        return self._discoverLayoutFile( mkdPage, "css" )
+    def getPageStyleFile( self, page ):
+        return self._discoverLayoutFile( page, "css" )
 
 
     def processExportedPage( self, page ):
@@ -336,20 +336,20 @@ class SiteExporter:
             fout.write( "".join( mkdLines[yamlPos:] ) )
 
 
-    def addPageStyle( self, mkdPage ):
-        style = self.getPageStyleFile( mkdPage )
+    def addPageStyle( self, page ):
+        style = self.getPageStyleFile( page )
         if style is None:
             return
 
-        curDir = os.path.dirname( mkdPage.htmlFilename )
+        curDir = os.path.dirname( page.fullHtmlFilename() )
         def makeRelative( path ):
             return os.path.relpath( path, curDir )
 
-        with open( mkdPage.fullFilename() ) as f:
+        with open( page.fullFilename() ) as f:
             mkdLines = f.readlines()
 
         yamlPos = self._findYamlInsertionPoint( mkdLines )
-        with open( mkdPage.fullFilename(), "w" ) as fout:
+        with open( page.fullFilename(), "w" ) as fout:
             fout.write( "".join( mkdLines[:yamlPos] ) )
             fout.write( "main-css: {}\n".format( makeRelative( style ) ) )
             fout.write( "".join( mkdLines[yamlPos:] ) )
