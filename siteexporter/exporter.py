@@ -34,6 +34,7 @@ class MarkdownPage:
         self.published = True
         self.template = "default.html"
         self.style = "default.css"
+        self.extraAttrs = {}
 
 
     def fullFilename(self):
@@ -68,6 +69,10 @@ class MarkdownPage:
 
         # lwarn( "{}: pub {}, weig {}, type {}".format( self.id, self.published, self.weight, self.pageType ))
         # lwarn( "{}".format( dir(self.page) ) )
+
+    def addExtraAttrs( self, attrDict ):
+        for k,v in attrDict.items():
+            self.extraAttrs[k] = v
 
     def isPublished( self ):
         return self.published and (self.parent is None or self.parent.isPublished())
@@ -145,6 +150,9 @@ class SiteExporter:
                 self.addPageIndex( page, index )
                 self.addPageStyle( page )
 
+        for page in mkdFiles:
+            if page.isPublished():
+                self._writeExtraAttrs( page )
         self.makeHtml( mkdFiles )
 
 
@@ -260,46 +268,29 @@ class SiteExporter:
         return index
 
 
-    def _renderHtmlIndex( self, page, index ):
-        curDir = os.path.dirname( page.htmlFilename )
-        def makeRelative( path ):
-            return os.path.relpath( path, curDir )
-
-        indexLines = []
-        def dumpEntries( entries, level ):
-            for e in entries:
-                indent = "" # " " * (2*(level+1))
-                line = '{0}<li id="{1}" class="level{2}">[{3}]({4})</li>\n'.format(
-                        indent, e.page.id, level,
-                        e.page.menuText,
-                        makeRelative(e.page.htmlFilename) )
-                indexLines.append( line )
-                if len(e.entries) > 0:
-                    indexLines.append( "{}<ul>\n".format(indent) )
-                    dumpEntries( e.entries, level+1 )
-                    indexLines.append( "{}</ul>\n".format(indent) )
-
-        dumpEntries( index.entries, 0 )
-        return indexLines
-
     def _renderYamlIndex( self, page, index ):
         curDir = os.path.dirname( page.htmlFilename )
         def makeRelative( path ):
             return os.path.relpath( path, curDir )
 
-        indexLines = [ "navindex:\n" ]
+        navindex = []
         def dumpEntries( entries, level ):
+            index = []
             for e in entries:
-                indent = " " * (2*(level+1))
-                indexLines.append( '{}- id: "{}"\n'.format( indent, e.page.id ) )
-                indexLines.append( '{}  title: "{}"\n'.format( indent, e.page.menuText ) )
-                indexLines.append( '{}  link: "{}"\n'.format( indent, makeRelative(e.page.htmlFilename) ) )
+                ie = {
+                        "id": e.page.id,
+                        "title": e.page.menuText,
+                        "link": makeRelative(e.page.htmlFilename)
+                        }
                 if len(e.entries) > 0:
-                    indexLines.append( "{}  items:\n".format( indent ) )
-                    dumpEntries( e.entries, level+1 )
+                    ie["items"] = dumpEntries( e.entries, level+1 )
 
-        dumpEntries( index.entries, 0 )
-        return indexLines
+                index.append( ie )
+
+            return index
+
+        return { "navindex": dumpEntries( index.entries, 0 ) }
+
 
     # Find a point for inserting generated code, eg. the index.
     # Currently this is just after the yaml block if it starts in the first 10 lines.
@@ -320,12 +311,9 @@ class SiteExporter:
         mkdLines.insert( 0, [ "---\n", "---\n", "\n" ])
         return 1
 
-
-    def addPageIndex( self, page, index ):
-        if index is None or len(index.entries) == 0:
+    def _writeExtraAttrs( self, page ):
+        if len(page.extraAttrs) == 0:
             return
-
-        yamlIndex = self._renderYamlIndex(page, index)
 
         with open( page.fullFilename() ) as f:
             mkdLines = f.readlines()
@@ -333,8 +321,15 @@ class SiteExporter:
         yamlPos = self._findYamlInsertionPoint( mkdLines )
         with open( page.fullFilename(), "w" ) as fout:
             fout.write( "".join( mkdLines[:yamlPos] ) )
-            fout.write( "".join( yamlIndex ) )
+            fout.write( yaml.dump( page.extraAttrs ) )
             fout.write( "".join( mkdLines[yamlPos:] ) )
+
+
+    def addPageIndex( self, page, index ):
+        if index is None or len(index.entries) == 0:
+            return
+
+        page.addExtraAttrs( self._renderYamlIndex(page, index) )
 
 
     def addPageStyle( self, page ):
@@ -346,14 +341,7 @@ class SiteExporter:
         def makeRelative( path ):
             return os.path.relpath( path, curDir )
 
-        with open( page.fullFilename() ) as f:
-            mkdLines = f.readlines()
-
-        yamlPos = self._findYamlInsertionPoint( mkdLines )
-        with open( page.fullFilename(), "w" ) as fout:
-            fout.write( "".join( mkdLines[:yamlPos] ) )
-            fout.write( "main-css: {}\n".format( makeRelative( style ) ) )
-            fout.write( "".join( mkdLines[yamlPos:] ) )
+        page.addExtraAttrs( { "main-css": makeRelative( style ) } )
 
 
     def makeHtml( self, mkdFiles ):
