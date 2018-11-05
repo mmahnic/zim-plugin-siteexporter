@@ -4,6 +4,7 @@ import subprocess as subp
 # REQUIRE: pyyaml
 import yaml
 
+from news import NewsPageProcessor
 
 import logging
 # ldebug = logging.debug
@@ -45,6 +46,14 @@ class MarkdownPage:
 
     def parentId( self, levels=1 ):
         return ":".join( self.path[:-levels] )
+
+    def isChildOf( self, page ):
+        if len(self.path) <= len(page.path):
+            return False
+        for a,b in zip(self.path, page.path):
+            if a != b:
+                return False
+        return True
 
     def setAttributes( self, attrs ):
         if type(attrs) != type({}):
@@ -143,6 +152,12 @@ class SiteExporter:
             lwarn( "Process: {}".format( page ) )
             self.processExportedPage( page )
 
+	for page in mkdFiles:
+            processor = self.getPageProcessor( page )
+            if processor is not None:
+                newfiles = []
+                processor.digest( page, mkdFiles, newfiles )
+
         index = self.createPageIndex( mkdFiles )
 
         for page in mkdFiles:
@@ -179,7 +194,7 @@ class SiteExporter:
 
         # Layout file for a specific page type
         pageType = page.pageType
-        fn = os.path.join( base, "({}).ext".format( pageType, ext ) )
+        fn = os.path.join( base, "({}).{}".format( pageType, ext ) )
         if os.path.exists( fn ):
             return fn
 
@@ -197,6 +212,13 @@ class SiteExporter:
 
     def getPageStyleFile( self, page ):
         return self._discoverLayoutFile( page, "css" )
+
+
+    def getPageProcessor( self, page ):
+        if page.pageType == "news":
+            return NewsPageProcessor()
+
+        return None
 
 
     def processExportedPage( self, page ):
