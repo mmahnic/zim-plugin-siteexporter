@@ -1,5 +1,6 @@
 import os, sys, re
 import subprocess as subp
+import dateutil.parser as dateparser
 
 # REQUIRE: pyyaml
 import yaml
@@ -33,6 +34,9 @@ class MarkdownPage:
         self.menuText = None
         self.pageType = "page"
         self.published = True
+        self.createTime = None
+        self.expireTime = None
+        self.isDraft = False
         self.template = None # "default.html"
         self.style = None # "default.css"
         self.extraAttrs = {}
@@ -72,9 +76,20 @@ class MarkdownPage:
         else:
             self.menuText = None
 
+        # The order of the item in the menu
         self.weight = attrs["weight"] if "weight" in attrs else 999999
-        self.published = attrs["publish"] if "publish" in attrs else True
+
+        # The type of the processor for the page. Default is "page"
         self.pageType = attrs["type"] if "type" in attrs else "page"
+
+        # Published: published, not isDraft
+        self.published = attrs["publish"] if "publish" in attrs else True
+        self.isDraft = attrs["draft"] if "draft" in attrs else False
+
+        # Expired pages go to archive.
+        # The excerpt is shown on index page if: createTime < today < expireTime
+        self.createTime = attrs["created"] if "created" in attrs else None
+        self.expireTime = attrs["expires"] if "expires" in attrs else None
 
         # lwarn( "{}: pub {}, weig {}, type {}".format( self.id, self.published, self.weight, self.pageType ))
         # lwarn( "{}".format( dir(self.page) ) )
@@ -84,10 +99,30 @@ class MarkdownPage:
             self.extraAttrs[k] = v
 
     def isPublished( self ):
-        return self.published and (self.parent is None or self.parent.isPublished())
+        return self.published and not self.isDraft and (self.parent is None or self.parent.isPublished())
+
+    def isExpired( self, dateTime ):
+        if self.expireTime is None:
+            return False
+        return dateTime >= self.expireTime
+
+    def getCreationDate( self ):
+        if self.createTime is not None:
+            return self.createTime
+
+        if "Creation-Date" in self.page._meta:
+            return dateparser.parse(self.page_meta["Creation-Date"])
+
+        return self.page.ctime()
 
     def hasMenuEntry( self ):
         return self.menuText is not None and self.isPublished()
+
+    def getMarkdown( self ):
+        """Get the current intermediate markdown text from the exported file."""
+        with open( self.fullFilename() ) as f:
+            return f.readlines()
+        return None
 
 
 class IndexEntry:
