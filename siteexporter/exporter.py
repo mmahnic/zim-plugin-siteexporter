@@ -33,8 +33,8 @@ class MarkdownPage:
         self.menuText = None
         self.pageType = "page"
         self.published = True
-        self.template = "default.html"
-        self.style = "default.css"
+        self.template = None # "default.html"
+        self.style = None # "default.css"
         self.extraAttrs = {}
 
 
@@ -216,11 +216,19 @@ class SiteExporter:
 
 
     def getPageTemplate( self, page ):
-        return self._discoverLayoutFile( page, "html5" )
+        if page.template is None:
+            page.template = self._discoverLayoutFile( page, "html5" )
+            if page.template is None:
+                pate.template = "default.html5"
+        return page.template
 
 
     def getPageStyleFile( self, page ):
-        return self._discoverLayoutFile( page, "css" )
+        if page.style is None:
+            page.style = self._discoverLayoutFile( page, "css" )
+            if page.style is None:
+                pate.style = "default.css"
+        return page.style
 
 
     # Process [@ ... @] instructions in the template. TODO: move to a class
