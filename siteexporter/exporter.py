@@ -104,7 +104,8 @@ class IndexEntry:
 class SiteExporter:
     def __init__(self):
         # TODO: read from 00:00.config yaml
-        self.layout = "00:layout:simple"
+        # self.layout = "00:layout:simple"
+        self.layout = "00:layout:w3css"
         pass
 
     def layoutPath(self):
@@ -168,6 +169,14 @@ class SiteExporter:
         for page in mkdFiles:
             if page.isPublished():
                 self._writeExtraAttrs( page )
+
+        templates = set([])
+        for page in mkdFiles:
+            templates.add(self.getPageTemplate(page))
+
+        for templateFn in templates:
+            self.preprocessTemplate(templateFn)
+
         self.makeHtml( mkdFiles )
 
 
@@ -212,6 +221,33 @@ class SiteExporter:
 
     def getPageStyleFile( self, page ):
         return self._discoverLayoutFile( page, "css" )
+
+
+    # Process [@ ... @] instructions in the template. TODO: move to a class
+    def preprocessTemplate( self, templateFilename ):
+        if not os.path.exists( templateFilename ):
+            return
+        with open( templateFilename ) as f:
+            lines = f.readlines()
+
+        rxinclude = re.compile( r"^\s*\[@\s*include\s+([^@\]]+)@\]\s*$" )
+        res = []
+
+        for line in lines:
+            mo = rxinclude.match( line )
+            if mo is None:
+                res.append( line )
+            else:
+                fn = os.path.join( os.path.dirname( templateFilename ), mo.group(1).strip() )
+                if not os.path.exists( fn ):
+                    res.append( line )
+                    res.append( "FAILED: no {}\n".format( fn ) )
+                else:
+                    with open( fn ) as f:
+                        res.extend( f.readlines() )
+
+        with open( templateFilename, "w" ) as f:
+            f.write( "".join( res ) )
 
 
     def getPageProcessor( self, page ):
