@@ -37,6 +37,7 @@ class MarkdownPage:
         self.published = True
         self.createDate = None
         self.expireDate = None
+        self.publishDate = None
         self.isDraft = False
         self.template = None # "default.html"
         self.style = None # "default.css"
@@ -93,9 +94,10 @@ class MarkdownPage:
         self.isDraft = attrs["draft"] if "draft" in attrs else False
 
         # Expired pages go to archive.
-        # The excerpt is shown on index page if: createDate < today < expireDate
+        # The excerpt is shown on index page if: publishDate < today < expireDate
         self.createDate = attrs["createDate"].toordinal() if "createDate" in attrs else None
         self.expireDate = attrs["expireDate"].toordinal() if "expireDate" in attrs else None
+        self.publishDate = attrs["publishDate"].toordinal() if "publishDate" in attrs else self.createDate
 
         # lwarn( "{}: pub {}, weig {}, type {}".format( self.id, self.published, self.weight, self.pageType ))
         # lwarn( "{}".format( dir(self.page) ) )
@@ -123,6 +125,14 @@ class MarkdownPage:
             return makeDate(dateparser.parse(self.zimPage._meta["Creation-Date"]))
 
         return makdDate(self.zimPage.ctime())
+
+
+    def getPublishDate( self ):
+        if self.publishDate is not None:
+            return datetime.date.fromordinal(self.publishDate)
+
+        return self.getCreationDate()
+
 
     def hasMenuEntry( self ):
         return self.menuText is not None and self.isPublished()

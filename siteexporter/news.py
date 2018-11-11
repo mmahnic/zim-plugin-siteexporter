@@ -28,15 +28,20 @@ class NewsPageProcessor:
                 continue
             if self.isInArchive( p ):
                 continue
+
+            pubDate = p.getPublishDate()
+            if pubDate is not None and pubDate > today.date():
+                continue
+
             descr = {
                     "id": p.id,
                     "title": p.title,
                     "link": makeRelative(p.htmlFilename),
                     "brief": self.getBriefDescription( p )
                     }
-            cdt = p.getCreationDate()
-            if cdt is not None:
-                descr["date"] = "{}.{}.{}".format( cdt.day, cdt.month, cdt.year )
+            if pubDate is not None:
+                descr["date"] = "{}.{}.{}".format( pubDate.day, pubDate.month, pubDate.year )
+
             childAttrs.append( descr )
 
         page.addExtraAttrs( { "news_activeitems": childAttrs } )
