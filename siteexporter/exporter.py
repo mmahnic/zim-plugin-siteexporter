@@ -1,4 +1,5 @@
 import os, sys, re
+import shutil
 import subprocess as subp
 import datetime
 import dateutil.parser as dateparser
@@ -181,6 +182,7 @@ class SiteExporter:
         self.configPage = None
         self.layout = None
         self.configPageId = "00:00.config"
+        self.zimNotebookDir = None
 
 
     # from zim.export
@@ -204,6 +206,7 @@ class SiteExporter:
 
 
     def export(self, notebook):
+        self.zimNotebookDir = notebook.layout.root
         exporter = self.build_notebook_exporter( exportPath, "Default" )
         from zim.export.selections import AllPages
         pages = AllPages(notebook)
@@ -245,6 +248,7 @@ class SiteExporter:
             self.preprocessTemplate(templateFn)
 
         self.makeHtml( self.mkdPages )
+        self.copyFilesToPubDir()
 
 
     def layoutPath(self):
@@ -505,4 +509,69 @@ class SiteExporter:
             cmd = command + [ "--template", template ] + filenames
             lwarn( " ".join(cmd) )
             subp.call(cmd)
+
+
+    def copyFilesToPubDir( self ):
+        config = self.getConfigPage()
+        pubdir = config.attrs["pubdir"] if "pubdir" in config.attrs else None
+        if pubdir is None:
+            raise Exception( "pubdir is not set on page {}", self.configPageId )
+
+        if not os.path.isabs( pubdir ):
+            pubdir = os.path.normpath( os.path.join( self.zimNotebookDir.encodedpath, pubdir ) )
+
+        if not os.path.exists( pubdir ):
+            os.makedirs( pubdir )
+
+        def getHtmlLinks( fn ):
+            html = open( fn ).read()
+            rxLink =  re.compile( r'''(src|href)="([^"]+)"''' )
+            return set([ mo.group(2) for mo in rxLink.finditer( html ) ])
+
+        def getCssLinks( fn ):
+            css = open( fn ).read()
+            rxLink =  re.compile( r'''url\s*\(\s*["']?([^'")]+)["']?\s*\)''' )
+            return set([ mo.group(1) for mo in rxLink.finditer( css ) ])
+
+        def recurseCssLinks( link, basedir, resources ):
+            cssfn = os.path.normpath( os.path.join( basedir, link ) )
+            cssdir = os.path.dirname( cssfn )
+            cssurls = getCssLinks( cssfn )
+            for url in cssurls:
+                ressrc = os.path.normpath( os.path.join( cssdir, url ) )
+                lwarn( "{} / {} -> {}".format( link, url, ressrc ) )
+                if os.path.exists( ressrc ) and not ressrc in resources:
+                    resources.add( os.path.relpath( ressrc, exportPath ) )
+                    if url.endswith( ".css" ):
+                        recurseCssLinks( url, cssdir, resources )
+
+        resources = set()
+        for page in self.mkdPages:
+            if not page.isPublished():
+                continue
+
+            target = os.path.join( pubdir, page.htmlFilename )
+            if not os.path.exists( os.path.dirname( target ) ):
+                os.makedirs( os.path.dirname( target ) )
+            shutil.copyfile( page.fullHtmlFilename(), target )
+
+            links = getHtmlLinks( page.fullHtmlFilename() )
+            for link in links:
+                if link.endswith( ".html" ):
+                    continue
+                htmldir = os.path.dirname( page.fullHtmlFilename() )
+                ressrc = os.path.normpath( os.path.join( htmldir, link ) )
+                if os.path.exists( ressrc ):
+                    resources.add( os.path.relpath( ressrc, exportPath ) )
+
+                if link.endswith( ".css" ) and os.path.exists( ressrc ):
+                    recurseCssLinks( link, htmldir, resources )
+
+        lwarn( "{}".format( resources ) )
+        for res in resources:
+            ressrc = os.path.join( exportPath, res )
+            resdst = os.path.join( pubdir, res )
+            if not os.path.exists( os.path.dirname( resdst ) ):
+                os.makedirs( os.path.dirname( resdst ) )
+            shutil.copyfile( ressrc, resdst )
 
