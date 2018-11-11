@@ -163,36 +163,6 @@ class SiteExporter:
         self.configPageId = "00:00.config"
 
 
-    def layoutPath(self):
-        if self.layout is None:
-            config = self.getConfigPage()
-            if "layout" in config.attrs:
-                self.layout = config.attrs["layout"]
-
-        if self.layout is None:
-            raise Exception( "No layout is defined in the config page '{}'.".format( self.configPageId ) )
-
-        return os.path.join( exportPath, *self.layout.split(":") )
-
-
-    def getConfigPage( self ):
-        if self.configPage is None:
-            self.configPage = self.getPage( self.configPageId )
-
-        if self.configPage is None:
-            raise Exception( "Config page '{}' not found.".format( self.configPageId ) )
-
-        return self.configPage
-
-
-    def getPage( self, pageId ):
-        for p in self.mkdPages:
-            if p.id == pageId:
-                return p
-
-        return None
-
-
     # from zim.export
     def build_notebook_exporter(self, dir, template, **opts):
         '''Returns an L{Exporter} that is suitable for exporting a whole
@@ -261,6 +231,36 @@ class SiteExporter:
             self.preprocessTemplate(templateFn)
 
         self.makeHtml( self.mkdPages )
+
+
+    def layoutPath(self):
+        if self.layout is None:
+            config = self.getConfigPage()
+            if "layout" in config.attrs:
+                self.layout = config.attrs["layout"]
+
+        if self.layout is None:
+            raise Exception( "No layout is defined in the config page '{}'.".format( self.configPageId ) )
+
+        return os.path.join( exportPath, *self.layout.split(":") )
+
+
+    def getConfigPage( self ):
+        if self.configPage is None:
+            self.configPage = self.getPage( self.configPageId )
+
+        if self.configPage is None:
+            raise Exception( "Config page '{}' not found.".format( self.configPageId ) )
+
+        return self.configPage
+
+
+    def getPage( self, pageId ):
+        for p in self.mkdPages:
+            if p.id == pageId:
+                return p
+
+        return None
 
 
     # copy the parent realtions from Page to MarkdownPage
