@@ -567,10 +567,18 @@ class SiteExporter:
                 if link.endswith( ".css" ):
                     recurseCssLinks( link, htmldir, resources )
 
-        # TODO: remove destination files that are not in pages + resources
+        filesToCopy = pages.union(resources)
+
+        # Remove destination files that are not in pages + resources
+        for root, dirs, files in os.walk( pubdir ):
+            for fn in files:
+                destfn = os.path.join( root, fn )
+                relfn = os.path.relpath( destfn, pubdir )
+                if not relfn in filesToCopy:
+                    os.remove( destfn )
 
         # Copy the discovered pages and resources
-        for res in resources.union( pages ):
+        for res in filesToCopy:
             ressrc = os.path.join( exportPath, res )
             resdst = os.path.join( pubdir, res )
             if not os.path.exists( os.path.dirname( resdst ) ):
