@@ -2,6 +2,7 @@ import os, sys, re
 import subprocess as subp
 import datetime
 import dateutil.parser as dateparser
+import zim.formats
 
 # REQUIRE: pyyaml
 import yaml
@@ -42,6 +43,25 @@ class MarkdownPage:
         self.template = None # "default.html"
         self.style = None # "default.css"
         self.extraAttrs = {}
+
+        self._loadYamlAttributes()
+
+
+    def _loadYamlAttributes( self ):
+        zimLines = self.zimPage.dump(zim.formats.get_format('wiki'))
+        yamltext = []
+        inYaml = False
+        for line in zimLines:
+            if inYaml:
+                if line.rstrip() in ( "---", "..." ):
+                    break
+                yamltext.append( line )
+            else:
+                if line.rstrip() == "---":
+                    inYaml = True
+
+        if len(yamltext) > 0:
+            self.setAttributes( yaml.safe_load( "".join(yamltext) ) )
 
 
     def fullFilename(self):
@@ -188,19 +208,13 @@ class SiteExporter:
         from zim.export.selections import AllPages
         pages = AllPages(notebook)
 
-        self.mkdPages = []
-        # The iterator returns the page BEFORE it is exported :/
-	for p in exporter.export_iter(pages):
-            lwarn( "{}: {}".format( type(p), p ) )
-            try:
-                page = MarkdownPage(p)
-                lwarn( "Append: {}".format( p ) )
-                self.mkdPages.append( page )
-            except:
-                continue
-
+        self.mkdPages = [ MarkdownPage( p ) for p in pages if p.exists() ]
         self.findPageParents( self.mkdPages )
         self.getConfigPage()
+
+        # The iterator returns the page BEFORE it is exported :/
+	for p in exporter.export_iter(pages):
+            lwarn( "Exporting: {}: {}".format( type(p), p ) )
 
 	for page in self.mkdPages:
             lwarn( "Process: {}".format( page ) )
@@ -360,8 +374,6 @@ class SiteExporter:
 
         mkdLines = self.fixExportedLinks( mkdLines )
 
-        self.loadPageAttributes( page, mkdLines )
-
         with open( page.fullFilename(), "w" ) as fout:
             fout.write( "".join( mkdLines ) )
 
@@ -375,22 +387,6 @@ class SiteExporter:
                 mkdLines[i] = line[:b] + "." + htmlExtension + ")" + line[e:]
 
         return mkdLines
-
-
-    def loadPageAttributes( self, page, mkdLines ):
-        yamltext = []
-        inYaml = False
-        for line in mkdLines:
-            if inYaml:
-                if line.rstrip() in ( "---", "..." ):
-                    break
-                if len(line.strip()) > 0:
-                    yamltext.append( line )
-            else:
-                if line.rstrip() == "---":
-                    inYaml = True
-        if len(yamltext) > 0:
-            page.setAttributes( yaml.safe_load( "".join(yamltext) ) )
 
 
     def createPageIndex( self, mkdFiles ):
