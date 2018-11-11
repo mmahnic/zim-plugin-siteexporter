@@ -539,21 +539,19 @@ class SiteExporter:
             cssurls = getCssLinks( cssfn )
             for url in cssurls:
                 ressrc = os.path.normpath( os.path.join( cssdir, url ) )
-                lwarn( "{} / {} -> {}".format( link, url, ressrc ) )
                 if os.path.exists( ressrc ) and not ressrc in resources:
                     resources.add( os.path.relpath( ressrc, exportPath ) )
                     if url.endswith( ".css" ):
                         recurseCssLinks( url, cssdir, resources )
 
+        # Discover pages and resources to copy
+        pages = set()
         resources = set()
         for page in self.mkdPages:
             if not page.isPublished():
                 continue
 
-            target = os.path.join( pubdir, page.htmlFilename )
-            if not os.path.exists( os.path.dirname( target ) ):
-                os.makedirs( os.path.dirname( target ) )
-            shutil.copyfile( page.fullHtmlFilename(), target )
+            pages.add( os.path.relpath( page.fullHtmlFilename(), exportPath ) )
 
             links = getHtmlLinks( page.fullHtmlFilename() )
             for link in links:
@@ -561,14 +559,18 @@ class SiteExporter:
                     continue
                 htmldir = os.path.dirname( page.fullHtmlFilename() )
                 ressrc = os.path.normpath( os.path.join( htmldir, link ) )
-                if os.path.exists( ressrc ):
-                    resources.add( os.path.relpath( ressrc, exportPath ) )
+                if not os.path.exists( ressrc ):
+                    continue
 
-                if link.endswith( ".css" ) and os.path.exists( ressrc ):
+                resources.add( os.path.relpath( ressrc, exportPath ) )
+
+                if link.endswith( ".css" ):
                     recurseCssLinks( link, htmldir, resources )
 
-        lwarn( "{}".format( resources ) )
-        for res in resources:
+        # TODO: remove destination files that are not in pages + resources
+
+        # Copy the discovered pages and resources
+        for res in resources.union( pages ):
             ressrc = os.path.join( exportPath, res )
             resdst = os.path.join( pubdir, res )
             if not os.path.exists( os.path.dirname( resdst ) ):
