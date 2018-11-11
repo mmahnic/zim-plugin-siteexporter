@@ -8,7 +8,7 @@ class NewsPageProcessor:
     def digest( self, page, pages, newPages ):
         today = datetime.datetime.now()
         childs = [ p for p in pages
-            if p.isPublished() and p.isChildOf( page ) ]
+            if p.isPublished() and p.isDescendantOf( page ) ]
         if len(childs) == 0:
             return
 
@@ -28,9 +28,9 @@ class NewsPageProcessor:
                     "link": makeRelative(p.htmlFilename),
                     "brief": self.getBriefDescription( p )
                     }
-            if p.createTime is not None:
-                t = p.createTime
-                descr["date"] = "{}.{}.{}".format( t.day, t.month, t.year )
+            cdt = p.getCreationDate()
+            if cdt is not None:
+                descr["date"] = "{}.{}.{}".format( cdt.day, cdt.month, cdt.year )
             childAttrs.append( descr )
 
         page.addExtraAttrs( { "news_activeitems": childAttrs } )

@@ -1,5 +1,6 @@
 import os, sys, re
 import subprocess as subp
+import datetime
 import dateutil.parser as dateparser
 
 # REQUIRE: pyyaml
@@ -34,8 +35,8 @@ class MarkdownPage:
         self.menuText = None
         self.pageType = "page"
         self.published = True
-        self.createTime = None
-        self.expireTime = None
+        self.createDate = None
+        self.expireDate = None
         self.isDraft = False
         self.template = None # "default.html"
         self.style = None # "default.css"
@@ -51,13 +52,18 @@ class MarkdownPage:
     def parentId( self, levels=1 ):
         return ":".join( self.path[:-levels] )
 
-    def isChildOf( self, page ):
+    def isDescendantOf( self, page ):
         if len(self.path) <= len(page.path):
             return False
         for a,b in zip(self.path, page.path):
             if a != b:
                 return False
         return True
+
+    def getParentIds( self ):
+        if len(self.path) < 2:
+            return []
+        return [ self.parentId(i) for i in range(1, len(self.path)) ]
 
     def setAttributes( self, attrs ):
         if type(attrs) != type({}):
@@ -87,9 +93,9 @@ class MarkdownPage:
         self.isDraft = attrs["draft"] if "draft" in attrs else False
 
         # Expired pages go to archive.
-        # The excerpt is shown on index page if: createTime < today < expireTime
-        self.createTime = attrs["created"] if "created" in attrs else None
-        self.expireTime = attrs["expires"] if "expires" in attrs else None
+        # The excerpt is shown on index page if: createDate < today < expireDate
+        self.createDate = attrs["createDate"].toordinal() if "createDate" in attrs else None
+        self.expireDate = attrs["expireDate"].toordinal() if "expireDate" in attrs else None
 
         # lwarn( "{}: pub {}, weig {}, type {}".format( self.id, self.published, self.weight, self.pageType ))
         # lwarn( "{}".format( dir(self.page) ) )
@@ -102,18 +108,21 @@ class MarkdownPage:
         return self.published and not self.isDraft and (self.parent is None or self.parent.isPublished())
 
     def isExpired( self, dateTime ):
-        if self.expireTime is None:
+        if self.expireDate is None:
             return False
-        return dateTime >= self.expireTime
+        return dateTime.toordinal() >= self.expireDate
 
     def getCreationDate( self ):
-        if self.createTime is not None:
-            return self.createTime
+        if self.createDate is not None:
+            return datetime.date.fromordinal(self.createDate)
 
-        if "Creation-Date" in self.page._meta:
-            return dateparser.parse(self.page_meta["Creation-Date"])
+        def makeDate( dt ):
+            return datetime.date.fromordinal( dt.toordinal() )
 
-        return self.page.ctime()
+        if "Creation-Date" in self.zimPage._meta:
+            return makeDate(dateparser.parse(self.zimPage._meta["Creation-Date"]))
+
+        return makdDate(self.zimPage.ctime())
 
     def hasMenuEntry( self ):
         return self.menuText is not None and self.isPublished()
