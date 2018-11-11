@@ -147,13 +147,41 @@ class IndexEntry:
 
 class SiteExporter:
     def __init__(self):
-        # TODO: read from 00:00.config yaml
-        # self.layout = "00:layout:simple"
-        self.layout = "00:layout:w3css"
-        pass
+        self.mkdPages = None
+        self.configPage = None
+        self.layout = None
+        self.configPageId = "00:00.config"
+
 
     def layoutPath(self):
+        if self.layout is None:
+            config = self.getConfigPage()
+            if "layout" in config.attrs:
+                self.layout = config.attrs["layout"]
+
+        if self.layout is None:
+            raise Exception( "No layout is defined in the config page '{}'.".format( self.configPageId ) )
+
         return os.path.join( exportPath, *self.layout.split(":") )
+
+
+    def getConfigPage( self ):
+        if self.configPage is None:
+            self.configPage = self.getPage( self.configPageId )
+
+        if self.configPage is None:
+            raise Exception( "Config page '{}' not found.".format( self.configPageId ) )
+
+        return self.configPage
+
+
+    def getPage( self, pageId ):
+        for p in self.mkdPages:
+            if p.id == pageId:
+                return p
+
+        return None
+
 
     # from zim.export
     def build_notebook_exporter(self, dir, template, **opts):
@@ -180,48 +208,49 @@ class SiteExporter:
         from zim.export.selections import AllPages
         pages = AllPages(notebook)
 
-        mkdFiles = []
+        self.mkdPages = []
         # The iterator returns the page BEFORE it is exported :/
 	for p in exporter.export_iter(pages):
             lwarn( "{}: {}".format( type(p), p ) )
             try:
                 page = MarkdownPage(p)
                 lwarn( "Append: {}".format( p ) )
-                mkdFiles.append( page )
+                self.mkdPages.append( page )
             except:
                 continue
 
-        self.findPageParents( mkdFiles )
+        self.findPageParents( self.mkdPages )
+        self.getConfigPage()
 
-	for page in mkdFiles:
+	for page in self.mkdPages:
             lwarn( "Process: {}".format( page ) )
             self.processExportedPage( page )
 
-	for page in mkdFiles:
+	for page in self.mkdPages:
             processor = self.getPageProcessor( page )
             if processor is not None:
                 newfiles = []
-                processor.digest( page, mkdFiles, newfiles )
+                processor.digest( page, self.mkdPages, newfiles )
 
-        index = self.createPageIndex( mkdFiles )
+        index = self.createPageIndex( self.mkdPages )
 
-        for page in mkdFiles:
+        for page in self.mkdPages:
             if page.isPublished():
                 self.addPageIndex( page, index )
                 self.addPageStyle( page )
 
-        for page in mkdFiles:
+        for page in self.mkdPages:
             if page.isPublished():
                 self._writeExtraAttrs( page )
 
         templates = set([])
-        for page in mkdFiles:
+        for page in self.mkdPages:
             templates.add(self.getPageTemplate(page))
 
         for templateFn in templates:
             self.preprocessTemplate(templateFn)
 
-        self.makeHtml( mkdFiles )
+        self.makeHtml( self.mkdPages )
 
 
     # copy the parent realtions from Page to MarkdownPage
