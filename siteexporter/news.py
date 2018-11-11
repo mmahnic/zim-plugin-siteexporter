@@ -1,11 +1,15 @@
 import os
 import datetime
 
+ARCHIVETYPE = "news.archive"
+
 class NewsPageProcessor:
     def __init__(self):
+        self.pages = None
         pass
 
     def digest( self, page, pages, newPages ):
+        self.pages = pages
         today = datetime.datetime.now()
         childs = [ p for p in pages
             if p.isPublished() and p.isDescendantOf( page ) ]
@@ -22,6 +26,8 @@ class NewsPageProcessor:
         for p in childs:
             if p.isExpired( today ):
                 continue
+            if self.isInArchive( p ):
+                continue
             descr = {
                     "id": p.id,
                     "title": p.title,
@@ -34,6 +40,21 @@ class NewsPageProcessor:
             childAttrs.append( descr )
 
         page.addExtraAttrs( { "news_activeitems": childAttrs } )
+
+
+    def isInArchive( self, page ):
+        if page.pageType == ARCHIVETYPE:
+            return True
+
+        parents = [ self.findPage(id) for id in page.getParentIds() ]
+
+        return any( [ p.pageType == ARCHIVETYPE for p in parents if p is not None ] )
+
+
+    def findPage( self, pageId ):
+        for p in self.pages:
+            if p.id == pageId:
+                return p
 
 
     def getBriefDescription( self, page ):
