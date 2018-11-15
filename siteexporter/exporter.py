@@ -430,7 +430,7 @@ class SiteExporter:
             for e in entries:
                 ie = {
                         "id": e.page.id,
-                        "title": e.page.menuText,
+                        "display": e.page.menuText,
                         "link": makeRelative(e.page.htmlFilename)
                         }
                 if len(e.entries) > 0:
