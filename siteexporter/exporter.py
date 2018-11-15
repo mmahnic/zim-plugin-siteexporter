@@ -35,14 +35,15 @@ class MarkdownPage:
         self.id = ":".join(self.path)
         self.level = len(self.path)
         self.weight = 999999
-        self.title = self.path[-1]
+        self.title = self.zimPage.get_title()
+        self.meta_title = self.title
         self.menuText = None
         self.pageType = "page"
+        self.isDraft = False
         self.published = True
         self.createDate = None
         self.expireDate = None
         self.publishDate = None
-        self.isDraft = False
         self.template = None # "default.html"
         self.style = None # "default.css"
         self.extraAttrs = {}
@@ -98,29 +99,35 @@ class MarkdownPage:
 
         if "title" in attrs:
             self.title = attrs["title"]
-        else:
-            self.title = self.path[-1]
+
+        if "meta_title" in attrs:
+            self.title = attrs["meta_title"]
 
         if "menu" in attrs:
             self.menuText = attrs["menu"]
-        else:
-            self.menuText = None
 
         # The order of the item in the menu
-        self.weight = attrs["weight"] if "weight" in attrs else 999999
+        if "weight" in attrs:
+            self.weight = attrs["weight"]
 
         # The type of the processor for the page. Default is "page"
-        self.pageType = attrs["type"] if "type" in attrs else "page"
+        if "type" in attrs:
+            self.pageType = attrs["type"]
 
         # Published: published, not isDraft
-        self.published = attrs["publish"] if "publish" in attrs else True
-        self.isDraft = attrs["draft"] if "draft" in attrs else False
+        if "publish" in attrs:
+            self.published = attrs["publish"]
+        if "draft" in attrs:
+            self.isDraft = attrs["draft"]
 
         # Expired pages go to archive.
         # The excerpt is shown on index page if: publishDate < today < expireDate
-        self.createDate = attrs["createDate"].toordinal() if "createDate" in attrs else None
-        self.expireDate = attrs["expireDate"].toordinal() if "expireDate" in attrs else None
-        self.publishDate = attrs["publishDate"].toordinal() if "publishDate" in attrs else self.createDate
+        if "createDate" in attrs:
+            self.createDate = attrs["createDate"].toordinal()
+        if "expireDate" in attrs:
+            self.expireDate = attrs["expireDate"].toordinal()
+        if "publishDate" in attrs:
+            self.publishDate = attrs["publishDate"].toordinal()
 
         # lwarn( "{}: pub {}, weig {}, type {}".format( self.id, self.published, self.weight, self.pageType ))
         # lwarn( "{}".format( dir(self.page) ) )
@@ -128,6 +135,28 @@ class MarkdownPage:
     def addExtraAttrs( self, attrDict ):
         for k,v in attrDict.items():
             self.extraAttrs[k] = v
+
+    # Called just before the extra attributes will be written to the output
+    def completeExtraAttrs( self, configPage ):
+        # Add a title if it does not exist in the attributes
+        if "title" not in self.attrs and "title" not in self.extraAttrs:
+            self.extraAttrs["title"] = self.title
+
+        # Use settings from the configuration to build the page meta title
+        if "meta_title" not in self.extraAttrs:
+            if self.meta_title is not None:
+                meta = self.meta_title
+            elif self.title is not None:
+                meta = self.title
+            else:
+                meta = ""
+
+            hasConfig = configPage is not None
+            meta_prefix = configPage.attrs["titlePrefix"] \
+                    if (hasConfig and "titlePrefix" in configPage.attrs) else ""
+            meta_suffix = configPage.attrs["titleSuffix"] \
+                    if (hasConfig and "titleSuffix" in configPage.attrs) else ""
+            self.extraAttrs["meta_title"] = "{}{}{}".format( meta_prefix, meta, meta_suffix )
 
     def isPublished( self ):
         return self.published and not self.isDraft and (self.parent is None or self.parent.isPublished())
@@ -215,7 +244,7 @@ class SiteExporter:
 
         self.mkdPages = [ MarkdownPage( p ) for p in pages if p.exists() ]
         self.findPageParents( self.mkdPages )
-        self.getConfigPage()
+        config = self.getConfigPage()
 
         # The iterator returns the page BEFORE it is exported :/
 	for p in exporter.export_iter(pages):
@@ -240,6 +269,7 @@ class SiteExporter:
 
         for page in self.mkdPages:
             if page.isPublished():
+                page.completeExtraAttrs( config )
                 self._writeExtraAttrs( page )
 
         templates = set([])
