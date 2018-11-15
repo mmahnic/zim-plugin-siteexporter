@@ -16,9 +16,11 @@ import logging
 lwarn = logging.warning
 lerror = logging.error
 
+pandoccmd = "pandoc"
 exportPath = "/tmp/site"
 mkdExtension = "markdown"
 htmlExtension = "html"
+
 
 class MarkdownPage:
     def __init__( self, zimPage ):
@@ -494,7 +496,7 @@ class SiteExporter:
 
 
     def makeHtml( self, mkdFiles ):
-        command = [ "pandoc", "-f", "markdown+raw_html", "-t", "html5" ]
+        command = [ pandoccmd, "-f", "markdown+raw_html", "-t", "html5" ]
         command += [ "--standalone" ]
         command += [ "--section-divs" ]
 
