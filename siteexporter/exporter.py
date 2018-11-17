@@ -49,7 +49,7 @@ class MarkdownPage:
         self.style = None # "default.css"
         self.extraAttrs = {}
 
-        self.setAttributes( loadYamlAttributes(zimPage) )
+        self.setAttributes( loadYamlAttributes( zimPage ) )
 
 
     def fullFilename(self):
@@ -269,7 +269,7 @@ class SiteExporter:
             self.layout = config.getValue( "layout" )
 
         if self.layout is None:
-            raise Exception( "No layout is defined in the config page '{}'.".format( config.name ) )
+            raise Exception( "Value 'layout' is defined on the config page '{}'.".format( config.name ) )
 
         return os.path.join( exportPath, *self.layout.split(":") )
 
@@ -521,7 +521,7 @@ class SiteExporter:
         hasConfig = config is not None
         pubdir = config.getValue( "pubdir" ) if hasConfig else None
         if pubdir is None:
-            raise Exception( "pubdir is not set on page {}", self.configPageId )
+            raise Exception( "Value 'pubdir' is not set on the config page '{}'".format( self.configPageId ) )
 
         if not os.path.isabs( pubdir ):
             pubdir = os.path.normpath( os.path.join( self.zimNotebookDir.encodedpath, pubdir ) )
