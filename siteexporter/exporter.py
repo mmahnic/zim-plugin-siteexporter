@@ -3,16 +3,17 @@ import shutil
 import subprocess as subp
 import datetime
 import dateutil.parser as dateparser
+
 import zim.formats
 
 # REQUIRE: pyyaml
 import yaml
 
+from config import getActiveConfiguration
+from pageattributes import loadYamlAttributes
 from news import NewsPageProcessor
 
 import logging
-# ldebug = logging.debug
-# linfo = logging.info
 lwarn = logging.warning
 lerror = logging.error
 
@@ -48,24 +49,7 @@ class MarkdownPage:
         self.style = None # "default.css"
         self.extraAttrs = {}
 
-        self._loadYamlAttributes()
-
-
-    def _loadYamlAttributes( self ):
-        zimLines = self.zimPage.dump(zim.formats.get_format('wiki'))
-        yamltext = []
-        inYaml = False
-        for line in zimLines:
-            if inYaml:
-                if line.rstrip() in ( "---", "..." ):
-                    break
-                yamltext.append( line )
-            else:
-                if line.rstrip() == "---":
-                    inYaml = True
-
-        if len(yamltext) > 0:
-            self.setAttributes( yaml.safe_load( "".join(yamltext) ) )
+        self.setAttributes( loadYamlAttributes(zimPage) )
 
 
     def fullFilename(self):
@@ -129,15 +113,13 @@ class MarkdownPage:
         if "publishDate" in attrs:
             self.publishDate = attrs["publishDate"].toordinal()
 
-        # lwarn( "{}: pub {}, weig {}, type {}".format( self.id, self.published, self.weight, self.pageType ))
-        # lwarn( "{}".format( dir(self.page) ) )
 
     def addExtraAttrs( self, attrDict ):
         for k,v in attrDict.items():
             self.extraAttrs[k] = v
 
     # Called just before the extra attributes will be written to the output
-    def completeExtraAttrs( self, configPage ):
+    def completeExtraAttrs( self, config ):
         # Add a title if it does not exist in the attributes
         if "title" not in self.attrs and "title" not in self.extraAttrs:
             self.extraAttrs["title"] = self.title
@@ -151,11 +133,9 @@ class MarkdownPage:
             else:
                 meta = ""
 
-            hasConfig = configPage is not None
-            meta_prefix = configPage.attrs["titlePrefix"] \
-                    if (hasConfig and "titlePrefix" in configPage.attrs) else ""
-            meta_suffix = configPage.attrs["titleSuffix"] \
-                    if (hasConfig and "titleSuffix" in configPage.attrs) else ""
+            hasConfig = config is not None
+            meta_prefix = config.getValue( "titlePrefix", "" ) if hasConfig else ""
+            meta_suffix = config.getValue( "titleSuffix", "" ) if hasConfig else ""
             self.extraAttrs["meta_title"] = "{}{}{}".format( meta_prefix, meta, meta_suffix )
 
     def isPublished( self ):
@@ -210,7 +190,7 @@ class IndexEntry:
 class SiteExporter:
     def __init__(self):
         self.mkdPages = None
-        self.configPage = None
+        self.config = None
         self.layout = None
         self.configPageId = "00:00.config"
         self.zimNotebookDir = None
@@ -238,13 +218,13 @@ class SiteExporter:
 
     def export(self, notebook):
         self.zimNotebookDir = notebook.layout.root
+        self.config = getActiveConfiguration( notebook )
         exporter = self.build_notebook_exporter( exportPath, "Default" )
         from zim.export.selections import AllPages
         pages = AllPages(notebook)
 
         self.mkdPages = [ MarkdownPage( p ) for p in pages if p.exists() ]
         self.findPageParents( self.mkdPages )
-        config = self.getConfigPage()
 
         # The iterator returns the page BEFORE it is exported :/
 	for p in exporter.export_iter(pages):
@@ -269,7 +249,7 @@ class SiteExporter:
 
         for page in self.mkdPages:
             if page.isPublished():
-                page.completeExtraAttrs( config )
+                page.completeExtraAttrs( self.config )
                 self._writeExtraAttrs( page )
 
         templates = set([])
@@ -285,24 +265,17 @@ class SiteExporter:
 
     def layoutPath(self):
         if self.layout is None:
-            config = self.getConfigPage()
-            if "layout" in config.attrs:
-                self.layout = config.attrs["layout"]
+            config = self.config
+            self.layout = config.getValue( "layout" )
 
         if self.layout is None:
-            raise Exception( "No layout is defined in the config page '{}'.".format( self.configPageId ) )
+            raise Exception( "No layout is defined in the config page '{}'.".format( config.name ) )
 
         return os.path.join( exportPath, *self.layout.split(":") )
 
 
-    def getConfigPage( self ):
-        if self.configPage is None:
-            self.configPage = self.getPage( self.configPageId )
-
-        if self.configPage is None:
-            raise Exception( "Config page '{}' not found.".format( self.configPageId ) )
-
-        return self.configPage
+    def getConfig( self ):
+        return self.config
 
 
     def getPage( self, pageId ):
@@ -544,8 +517,9 @@ class SiteExporter:
 
 
     def copyFilesToPubDir( self ):
-        config = self.getConfigPage()
-        pubdir = config.attrs["pubdir"] if "pubdir" in config.attrs else None
+        config = self.config
+        hasConfig = config is not None
+        pubdir = config.getValue( "pubdir" ) if hasConfig else None
         if pubdir is None:
             raise Exception( "pubdir is not set on page {}", self.configPageId )
 
