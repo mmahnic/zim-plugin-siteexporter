@@ -41,14 +41,14 @@ def getActiveConfiguration( notebook ):
     if rootConfigPage is None:
         rootConfigPage = notebook.get_page( Path(configPageId) )
 
-    if rootConfigPage is None:
+    if rootConfigPage is None or not rootConfigPage.exists():
         raise Exception( "Root Config Page '{}' not found.".format( configPageId ) )
 
     globalAttrs = loadYamlAttributes( rootConfigPage )
     if "active" in globalAttrs:
         activeId = "{}:{}".format( configPageId, globalAttrs["active"] )
         activeConfigPage = notebook.get_page( Path( activeId ) )
-        if activeConfigPage is None:
+        if activeConfigPage is None or not activeConfigPage.exists():
             raise Exception( "Active Config Page '{}' not found.".format( activeId ) )
 
         return Configuration( activeConfigPage, notebook )
