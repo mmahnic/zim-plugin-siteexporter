@@ -194,6 +194,7 @@ class SiteExporter:
         self.layout = None
         self.configPageId = "00:00.config"
         self.zimNotebookDir = None
+        self.homepage = None
 
 
     # from zim.export
@@ -285,6 +286,13 @@ class SiteExporter:
 
         return None
 
+
+    def getHomepage( self ):
+        if self.homepage is None:
+            config = self.getConfig()
+            if config is not None and config.hasValue( "home" ):
+                self.homepage = self.getPage( config.getValue( "home" ) )
+        return self.homepage
 
     # copy the parent realtions from Page to MarkdownPage
     def findPageParents( self, mkdFiles ):
@@ -427,7 +435,6 @@ class SiteExporter:
         def makeRelative( path ):
             return os.path.relpath( path, curDir )
 
-        navindex = []
         def dumpEntries( entries, level ):
             index = []
             for e in entries:
@@ -443,7 +450,14 @@ class SiteExporter:
 
             return index
 
-        return { "navindex": dumpEntries( index.entries, 0 ) }
+        index = { "navindex" : dumpEntries( index.entries, 0 ) }
+
+        # Add a link to homepage to the top-level index
+        homepage = self.getHomepage()
+        if homepage is not None and homepage.isPublished():
+            index[ "home" ] = makeRelative( homepage.htmlFilename )
+
+        return index
 
 
     # Find a point for inserting generated code, eg. the index.
