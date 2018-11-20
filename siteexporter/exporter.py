@@ -309,7 +309,7 @@ class SiteExporter:
 
         # Layout file for a specific page type
         pageType = page.pageType
-        fn = os.path.join( base, "({}).{}".format( pageType, ext ) )
+        fn = os.path.join( base, "@{}@.{}".format( pageType, ext ) )
         if os.path.exists( fn ):
             return fn
 
