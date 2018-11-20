@@ -1,0 +1,11 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2018-11-20T22:05:45+01:00
+
+====== Page Attributes ======
+---
+menu: Attributes
+---
+
+Page attributes are defined in YAML blocks of code at the beginning of each page. 
+Attributes are inherited from parent pages. Attributes defined in a child page override the same attributes defined in parent pages. Dictionary and list attributes are not merged. Instead, a top-level attribute of the parent is replaced with a new one with the same name from the child.

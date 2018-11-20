@@ -1,0 +1,23 @@
+<div id="sitenavigation"><nav>
+$if(navindex)$
+<ul>
+$for(navindex)$
+   <li class=level0" id="$navindex.id$"><a href="$navindex.link$">$navindex.display$</a></li>
+$if(navindex.items)$
+   <ul>
+$for(navindex.items)$
+      <li class=level1" id="$navindex.items.id$"><a href="$navindex.items.link$">$navindex.items.display$</a></li>
+$if(navindex.items.items)$
+      <ul>
+$for(navindex.items.items)$
+         <li class=level2" id="$navindex.items.items.id$"><a href="$navindex.items.items.link$">$navindex.items.items.display$</a></li>
+$endfor$
+      </ul>
+$endif$
+$endfor$
+   </ul>
+$endif$
+$endfor$
+</ul>
+$endif$
+</nav></div>

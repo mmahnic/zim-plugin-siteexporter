@@ -1,0 +1,14 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2018-11-20T21:23:55+01:00
+
+====== Menus ======
+---
+menu: Menus
+---
+
+==== Index entry ====
+The page is added to the index if it has a //menu// attribute. The value set in the attribute will be displayed in the index.
+
+==== Sorting ====
+The order of the index items is defined with the //weight// attribute. The items on the same level are sorted by //weight// in ascending order.

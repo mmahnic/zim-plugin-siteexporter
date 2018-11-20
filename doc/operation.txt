@@ -1,0 +1,19 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2018-11-20T21:05:43+01:00
+
+====== Mode of operation ======
+---
+menu: Operation
+---
+
+* All pages are exported as Markdown to a temporary location.
+* An index is generated for the pages that will be published and have a menu entry.
+* The links are fixed in the generated markdown pages.
+* Templates from the selected layout are preprocessed.
+* Each page that is selected for publishing is processed with an appropriate processor. Processors generate new attributes and add them to the page extra attributes.
+* The index is added to the extra attributes of each page.
+* The generated extra attributes are added to the beginning of the generated Markdown files as YAML blocks.
+* The Markdown files are processed by Pandoc using the template appropriate for each page.
+* Links are extracted from the generated HTML files to find the resources required by the generated site.
+* The HTML files and the discovered resources are copied to the final directory.

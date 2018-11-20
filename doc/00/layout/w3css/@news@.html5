@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"$if(lang)$lang="$lang$" xml:lang="$lang$"$endif$$if(dir)$ dir="$dir$"$endif$>
+[@include htmlhead.htmli@]
+<body class="w3-content w3-left" style="max-width:42em">
+<div class="w3-panel w3-white">&nbsp;</div>
+$for(include-before)$
+$include-before$
+$endfor$
+
+[@include navigationbar.htmli@]
+
+<div id="main-wrapper" class="w3-container">
+$if(title)$
+<header id="title-block-header">
+<h1 class="title">$title$</h1>
+$if(subtitle)$
+<p class="subtitle">$subtitle$</p>
+$endif$
+$for(author)$
+<p class="author">$author$</p>
+$endfor$
+$if(date)$
+<p class="date">$date$</p>
+$endif$
+</header>
+$endif$
+$if(toc)$
+<nav id="$idprefix$TOC">
+$table-of-contents$
+</nav>
+$endif$
+<main>
+$body$
+
+$if(news_activeitems)$
+$for(news_activeitems)$
+<div class="w3-card">
+<article>
+  <a class="header-wrap" href="$news_activeitems.link$">
+   <header class="newsitem-button w3-light-grey">
+      <h5>$news_activeitems.title$</h5>
+      $if(news_activeitems.date)$<div class="newsitem-date">Published $news_activeitems.date$</div>$endif$
+   </header>
+  </a>
+<div class="w3-container">
+$news_activeitems.brief$
+<a href="$news_activeitems.link$"> more...</a>
+</div>
+</article>
+</div>
+<br>
+$endfor$
+$endif$
+</main>
+
+</div>
+$for(include-after)$
+$include-after$
+$endfor$
+</body>
+</html>
+

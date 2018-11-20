@@ -1,0 +1,15 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2018-11-20T20:51:23+01:00
+
+====== Type: news ======
+---
+menu: News
+---
+
+* collect children
+* prepare a list of excerpts of published children
+* excerpt: up to <!--more--> or the first 300 charactres or up to the first heading
+Attributes:
+	* createDate, publishDate, expireDate
+	* draft

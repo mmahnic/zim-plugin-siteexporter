@@ -1,0 +1,25 @@
+@import url("w3.css");
+
+/* 
+arrow-right: &#11208; "⯈"
+arrow-down:  &#11206; "⯆"
+en-quad: &#8192; " "
+em-quad: &#8193; " "
+*/
+.nav-level1::before { content: "⯈ "; opacity: 0.5; } 
+.nav-level2::before { content: "   "; } 
+.nav-dropdown::after { content: " ⯆";  opacity: 0.5; }
+
+.nav-level1 { font-size: 100%; }
+.nav-level2 { font-size: 90%; }
+
+.newsitem-date { font-size: 50%; overflow: hidden; opacity: 0.5; }
+
+.newsitem-button { border:none; display:block; padding:8px 16px;
+overflow:hidden; text-decoration:none; color:inherit; background-color:inherit; cursor:pointer; }
+.newsitem-button{-webkit-touch-callout:none;-webkit-user-select:none;
+-khtml-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}   
+.newsitem-button:disabled{cursor:not-allowed;opacity:0.3}
+.newsitem-button:hover{color:#000!important;background-color:#ccc!important}
+
+a.header-wrap { text-decoration: none; }

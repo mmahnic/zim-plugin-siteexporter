@@ -1,0 +1,10 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2018-11-20T22:00:02+01:00
+
+====== Configuration ======
+---
+menu: Configuration
+---
+
+The configuration of the site is stored under the page [[00]]. The relative path to the active configuration is stored in the //active// attribute of the page [[00:00.config]] .

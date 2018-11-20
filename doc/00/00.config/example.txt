@@ -1,0 +1,19 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2018-11-17T12:19:43+01:00
+
+====== Example configuration ======
+---
+layout: "00:layout:w3css"
+# layout: "00:layout:simple"
+pubdir: "../public-example"
+titlePrefix: "Zim Help: "
+titleSuffix: " | Site Exporter"
+---
+
+==== Site Exporter Attributes ====
+* //layout//: absolute Zim path to the layout that will be used to generate the site.
+* //pbudir//: the directory where the site should be built. Relative paths are relative to the root directory of the notebook. The pages are first exported to a temporary directory where they are processed. The generated final files are copied to //pubdir// afterwards.
+* //titlePrefix//: the string to prepend to the meta-title value.
+* //titleSuffix//: the string to append to the meta-title value.
+

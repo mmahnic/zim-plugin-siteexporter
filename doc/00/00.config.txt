@@ -1,0 +1,20 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2018-11-04T18:14:09+01:00
+
+====== Configuration ======
+---
+titlePrefix: "Zim Help: "
+titleSuffix: " | Site Exporter"
+home: "index"
+active: "example"
+---
+
+==== Site Exporter Attributes ====
+Attributes are inherited from the parent pages. The attributes defined in the child page override the attributes defined in parent pages. Dictionary and list attributes are not merged. The top-level attribute is replaced with a new one, instead.
+
+* //publish//: boolean; //true// if the page and subpages should be published, //false// otherwise. A child page can not be published if the parent is not published.
+* //home//: an absolute Zim path to the page that is the homepage of the site.
+* //active//: a relative Zim path to the active configuration for the site exporter.
+* //titlePrefix//, //tilteSuffix//: see [[:00:00.config:example|example.]]
+

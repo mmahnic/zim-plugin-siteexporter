@@ -1,0 +1,20 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2018-11-20T21:42:23+01:00
+
+====== Templates ======
+---
+menu: Templates
+---
+
+The pages are exported from Zim into a temporary location with the default Markdown template.
+After the Markdown files are preporcessed in the temporary location, they are converted to HTML with Pandoc.
+
+==== Pandoc template selection ====
+The exporter uses Pandoc to convert Markdown files to HTML5. The exporter expects the templates in the selected layout to have the extension '.html5'.
+A Pandoc template can be selected for each page. The exporter first checks if a specific template for a page. The name of the specific template is obtained from the Zim address of the page by replacing the ':' separators with dots '.'.
+If a //type// attribute is defined for the page, the exporter checks if a template for the page type exists. The name of the page-type specific template is obtained by adding '@' to the beginnin and the end of the type name, eg. '@news@.html5'.
+If no specific templates are found, the template 'default.html5' is used.
+
+==== Pandoc template preprocessing ====
+When multiple templates are defined in a layout, some parts of the templates repeat in many templates. To simplify the maintenance of templates, these can be combined from multiple files. The directive [@include //<filename>//@] replaces the directive with the contents of the file //<filename>//. The included files usually have the extension '.htmli'. The templates are processed in arbitrary order and in-place so multi-level inclusion is not supported.

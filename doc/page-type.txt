@@ -1,0 +1,20 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2018-11-20T20:49:55+01:00
+
+====== Page Type ======
+---
+menu: Page Type
+---
+
+The page type is specified in the page attribute //type//.
+
+==== Page Type Processor ====
+If a page type is specified in page attributes and a processor for that type is registered, the page will be processed by that processor. A processor typically generates new attributes and adds them to the page's extra attributes. The extra attributes are later used by the final converter (Pandoc).
+A page processor may recognise and use additional page attributes.
+
+==== Layout ====
+If there is a template in the configured layout for the selected type it will be used by the final converter (Pandoc) to convert the page.
+If there is a CSS file in the configured layout for the selected type it will be inserted into to the page in the YAML attribute //main-css//. A template can then reference the attriubte to set the style of the page.
+
+

@@ -1,0 +1,39 @@
+body {
+   font-size: 12pt;
+   font-family: "Times New Roman", Times, serif;
+} 
+
+/* "Mobile" display -- narrow screen */
+@media only screen
+and ( max-width : 60em ) {
+   #sitenavigation {
+      font-family: Arial, sans-serif;
+      font-size: 11pt;
+      margin-bottom: 1em;
+      background-color: #eff;
+   }
+
+   #main-wrapper {
+      float: left;
+      max-width: 45em;
+      background-color: #ffe;
+   }
+}
+
+/* "Normal" display -- wide screen */
+@media only screen
+and ( min-width : 60em ) {
+   #sitenavigation {
+      float: left;
+      font-family: Arial, sans-serif;
+      font-size: 11pt;
+      margin-right: 1em;
+      background-color: #eff;
+   }
+
+   #main-wrapper {
+      float: left;
+      max-width: 45em;
+      background-color: #ffe;
+   }
+}
