@@ -85,7 +85,7 @@ class MarkdownPage:
             self.title = attrs["title"]
 
         if "meta_title" in attrs:
-            self.title = attrs["meta_title"]
+            self.meta_title = attrs["meta_title"]
 
         if "menu" in attrs:
             self.menuText = attrs["menu"]
