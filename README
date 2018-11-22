@@ -1,0 +1,5 @@
+
+A plugin for Zim-wiki that adds support for YAML attributes and uses them to
+export a site with Pandoc. Each exported page can be rendered with a different
+template.
+
