@@ -44,7 +44,7 @@ class NewsPageProcessor:
 
             childAttrs.append( descr )
 
-        page.addExtraAttrs( { "news_activeitems": childAttrs } )
+        page.addExtraAttrs( { "news-activeitems": childAttrs } )
 
 
     def isInArchive( self, page ):

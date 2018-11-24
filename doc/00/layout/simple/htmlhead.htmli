@@ -11,7 +11,7 @@ $endif$
 $if(keywords)$
   <meta name="keywords" content="$for(keywords)$$keywords$$sep$, $endfor$" />
 $endif$
-  <title>$if(meta_title)$$meta_title$$else$$if(title-prefix)$$title-prefix$ – $endif$$pagetitle$$endif$</title>
+  <title>$if(sx.meta-title)$$sx.meta-title$$else$$if(title-prefix)$$title-prefix$ – $endif$$pagetitle$$endif$</title>
   <style type="text/css">
       code{white-space: pre-wrap;}
       span.smallcaps{font-variant: small-caps;}
@@ -26,8 +26,8 @@ $if(highlighting-css)$
 $highlighting-css$
   </style>
 $endif$
-$for(main-css)$
-  <link rel="stylesheet" href="$main-css$" />
+$for(sx.main-css)$
+  <link rel="stylesheet" href="$sx.main-css$" />
 $endfor$
 $for(css)$
   <link rel="stylesheet" href="$css$" />

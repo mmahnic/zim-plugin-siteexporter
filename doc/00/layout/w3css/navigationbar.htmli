@@ -1,33 +1,33 @@
 <div class="w3-top">
 <div class="w3-bar w3-black">
 <nav>
-$if(navindex)$
-$if(home)$
-   <a href="$home$" class="w3-bar-item w3-button w3-blue w3-hide-small">&#x2302;</a>
+$if(sx.navindex)$
+$if(sx.home)$
+   <a href="$sx.home$" class="w3-bar-item w3-button w3-blue w3-hide-small">&#x2302;</a>
 $endif$
-$for(navindex)$
-$if(navindex.items)$
+$for(sx.navindex)$
+$if(sx.navindex.items)$
    <div class="w3-dropdown-hover">
-      <button class="w3-button w3-black w3-hide-small nav-dropdown">$navindex.display$</button>
+      <button class="w3-button w3-black w3-hide-small nav-dropdown">$sx.navindex.display$</button>
       <div class="w3-dropdown-content w3-bar-block w3-dark-grey">
-         <a href="$navindex.link$" class="w3-bar-item w3-button w3-hide-small">$navindex.display$</a>
-$for(navindex.items)$
-           <a href="$navindex.items.link$" class="w3-bar-item w3-button w3-hide-small nav-level1">$navindex.items.display$</a>
-$if(navindex.items.items)$
-$for(navindex.items.items)$
-             <a href="$navindex.items.items.link$" class="w3-bar-item w3-button w3-hide-small nav-level2">$navindex.items.items.display$</a>
+         <a href="$sx.navindex.link$" class="w3-bar-item w3-button w3-hide-small">$sx.navindex.display$</a>
+$for(sx.navindex.items)$
+           <a href="$sx.navindex.items.link$" class="w3-bar-item w3-button w3-hide-small nav-level1">$sx.navindex.items.display$</a>
+$if(sx.navindex.items.items)$
+$for(sx.navindex.items.items)$
+             <a href="$sx.navindex.items.items.link$" class="w3-bar-item w3-button w3-hide-small nav-level2">$sx.navindex.items.items.display$</a>
 $endfor$
 $endif$
 $endfor$
       </div>
    </div>
 $else$
-   <a href="$navindex.link$" class="w3-bar-item w3-button w3-hide-small">$navindex.display$</a>
+   <a href="$sx.navindex.link$" class="w3-bar-item w3-button w3-hide-small">$sx.navindex.display$</a>
 $endif$
 $endfor$
 $endif$
-$if(home)$
-   <a href="$home$" class="w3-bar-item w3-button w3-blue w3-hide-medium w3-hide-large">&#x2302;</a>
+$if(sx.home)$
+   <a href="$sx.home$" class="w3-bar-item w3-button w3-blue w3-hide-medium w3-hide-large">&#x2302;</a>
 $endif$
    <a href="javascript:void(0)" class="w3-bar-item w3-button w3-right w3-hide-medium w3-hide-large" onclick="displayBurgerMenu()">&#9776;</a>
 </nav>
@@ -35,15 +35,15 @@ $endif$
 </div>
 
 <div id="demo" class="w3-bar-block w3-black w3-hide w3-hide-large w3-hide-medium">
-$if(navindex)$
-$for(navindex)$
-   <a href="$navindex.link$" class="w3-bar-item w3-button">$navindex.display$</a>
-$if(navindex.items)$
-$for(navindex.items)$
-     <a href="$navindex.items.link$" class="w3-bar-item w3-button nav-level1">$navindex.items.display$</a>
-$if(navindex.items.items)$
-$for(navindex.items.items)$
-       <a href="$navindex.items.items.link$" class="w3-bar-item w3-button nav-level2">$navindex.items.items.display$</a>
+$if(sx.navindex)$
+$for(sx.navindex)$
+   <a href="$sx.navindex.link$" class="w3-bar-item w3-button">$sx.navindex.display$</a>
+$if(sx.navindex.items)$
+$for(sx.navindex.items)$
+     <a href="$sx.navindex.items.link$" class="w3-bar-item w3-button nav-level1">$sx.navindex.items.display$</a>
+$if(sx.navindex.items.items)$
+$for(sx.navindex.items.items)$
+       <a href="$sx.navindex.items.items.link$" class="w3-bar-item w3-button nav-level2">$sx.navindex.items.items.display$</a>
 $endfor$
 $endif$
 $endfor$

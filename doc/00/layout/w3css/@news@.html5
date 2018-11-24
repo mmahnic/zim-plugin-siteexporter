@@ -10,17 +10,17 @@ $endfor$
 [@include navigationbar.htmli@]
 
 <div id="main-wrapper" class="w3-container">
-$if(title)$
+$if(sx.title)$
 <header id="title-block-header">
-<h1 class="title">$title$</h1>
-$if(subtitle)$
-<p class="subtitle">$subtitle$</p>
+<h1 class="sx.title">$title$</h1>
+$if(sx.subtitle)$
+<p class="subtitle">$sx.subtitle$</p>
 $endif$
-$for(author)$
-<p class="author">$author$</p>
+$for(sx.author)$
+<p class="author">$sx.author$</p>
 $endfor$
-$if(date)$
-<p class="date">$date$</p>
+$if(sx.date)$
+<p class="date">$sx.date$</p>
 $endif$
 </header>
 $endif$
@@ -32,19 +32,19 @@ $endif$
 <main>
 $body$
 
-$if(news_activeitems)$
-$for(news_activeitems)$
+$if(sx.news-activeitems)$
+$for(sx.news-activeitems)$
 <div class="w3-card">
 <article>
-  <a class="header-wrap" href="$news_activeitems.link$">
+  <a class="header-wrap" href="$sx.news-activeitems.link$">
    <header class="newsitem-button w3-light-grey">
-      <h5>$news_activeitems.title$</h5>
-      $if(news_activeitems.date)$<div class="newsitem-date">Published $news_activeitems.date$</div>$endif$
+      <h5>$sx.news-activeitems.title$</h5>
+      $if(sx.news-activeitems.date)$<div class="newsitem-date">Published $sx.news-activeitems.date$</div>$endif$
    </header>
   </a>
 <div class="w3-container">
-$news_activeitems.brief$
-<a href="$news_activeitems.link$"> more...</a>
+$sx.news-activeitems.brief$
+<a href="$sx.news-activeitems.link$"> more...</a>
 </div>
 </article>
 </div>

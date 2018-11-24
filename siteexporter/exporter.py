@@ -37,7 +37,7 @@ class MarkdownPage:
         self.level = len(self.path)
         self.weight = 999999
         self.title = self.zimPage.get_title()
-        self.meta_title = self.title
+        self.metaTitle = self.title
         self.menuText = None
         self.pageType = "page"
         self.isDraft = False
@@ -45,8 +45,8 @@ class MarkdownPage:
         self.createDate = None
         self.expireDate = None
         self.publishDate = None
-        self.template = None # "default.html"
-        self.style = None # "default.css"
+        self.template = None
+        self.style = None
         self.extraAttrs = {}
 
         self.setAttributes( loadYamlAttributes( zimPage ) )
@@ -84,8 +84,8 @@ class MarkdownPage:
         if "title" in attrs:
             self.title = attrs["title"]
 
-        if "meta_title" in attrs:
-            self.meta_title = attrs["meta_title"]
+        if "metaTitle" in attrs:
+            self.metaTitle = attrs["metaTitle"]
 
         if "menu" in attrs:
             self.menuText = attrs["menu"]
@@ -121,13 +121,13 @@ class MarkdownPage:
     # Called just before the extra attributes will be written to the output
     def completeExtraAttrs( self, config ):
         # Add a title if it does not exist in the attributes
-        if "title" not in self.attrs and "title" not in self.extraAttrs:
+        if "title" not in self.extraAttrs:
             self.extraAttrs["title"] = self.title
 
         # Use settings from the configuration to build the page meta title
-        if "meta_title" not in self.extraAttrs:
-            if self.meta_title is not None:
-                meta = self.meta_title
+        if "meta-title" not in self.extraAttrs:
+            if self.metaTitle is not None:
+                meta = self.metaTitle
             elif self.title is not None:
                 meta = self.title
             else:
@@ -136,7 +136,12 @@ class MarkdownPage:
             hasConfig = config is not None
             meta_prefix = config.getValue( "titlePrefix", "" ) if hasConfig else ""
             meta_suffix = config.getValue( "titleSuffix", "" ) if hasConfig else ""
-            self.extraAttrs["meta_title"] = "{}{}{}".format( meta_prefix, meta, meta_suffix )
+            self.extraAttrs["meta-title"] = "{}{}{}".format( meta_prefix, meta, meta_suffix )
+
+        # Copy original attributes to extra attributes if they are not defined in extra
+        for k,v in self.attrs.items():
+            if v is not None and not k in self.extraAttrs:
+                self.extraAttrs[k] = v
 
     def isPublished( self ):
         return self.published and not self.isDraft and (self.parent is None or self.parent.isPublished())
@@ -489,7 +494,7 @@ class SiteExporter:
         yamlPos = self._findYamlInsertionPoint( mkdLines )
         with open( page.fullFilename(), "w" ) as fout:
             fout.write( "".join( mkdLines[:yamlPos] ) )
-            fout.write( yaml.dump( page.extraAttrs ) )
+            fout.write( yaml.dump( { "sx": page.extraAttrs } ) )
             fout.write( "".join( mkdLines[yamlPos:] ) )
 
 

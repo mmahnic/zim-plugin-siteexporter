@@ -9,17 +9,17 @@ $endfor$
 [@include navigationbar.htmli@]
 
 <div id="main-wrapper">
-$if(title)$
+$if(sx.title)$
 <header id="title-block-header">
-<h1 class="title">$title$</h1>
-$if(subtitle)$
-<p class="subtitle">$subtitle$</p>
+<h1 class="title">$sx.title$</h1>
+$if(sx.subtitle)$
+<p class="subtitle">$sx.subtitle$</p>
 $endif$
-$for(author)$
-<p class="author">$author$</p>
+$for(sx.author)$
+<p class="author">$sx.author$</p>
 $endfor$
-$if(date)$
-<p class="date">$date$</p>
+$if(sx.date)$
+<p class="date">$sx.date$</p>
 $endif$
 </header>
 $endif$
@@ -31,9 +31,9 @@ $endif$
 <main>
 $body$
 
-$if(news_activeitems)$
-$for(news_activeitems)$
-<a href="$news_activeitems.link$">$news_activeitems.title$</a><br>
+$if(sx.news-activeitems)$
+$for(sx.news-activeitems)$
+<a href="$sx.news-activeitems.link$">$sx.news-activeitems.title$</a><br>
 $endfor$
 $endif$
 </main>

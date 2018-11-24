@@ -1,16 +1,16 @@
 <div id="sitenavigation"><nav>
-$if(navindex)$
+$if(sx.navindex)$
 <ul>
-$for(navindex)$
-   <li class=level0" id="$navindex.id$"><a href="$navindex.link$">$navindex.display$</a></li>
-$if(navindex.items)$
+$for(sx.navindex)$
+   <li class="level0" id="$sx.navindex.id$"><a href="$sx.navindex.link$">$sx.navindex.display$</a></li>
+$if(sx.navindex.items)$
    <ul>
-$for(navindex.items)$
-      <li class=level1" id="$navindex.items.id$"><a href="$navindex.items.link$">$navindex.items.display$</a></li>
-$if(navindex.items.items)$
+$for(sx.navindex.items)$
+      <li class="level1" id="$sx.navindex.items.id$"><a href="$sx.navindex.items.link$">$sx.navindex.items.display$</a></li>
+$if(sx.navindex.items.items)$
       <ul>
-$for(navindex.items.items)$
-         <li class=level2" id="$navindex.items.items.id$"><a href="$navindex.items.items.link$">$navindex.items.items.display$</a></li>
+$for(sx.navindex.items.items)$
+         <li class="level2" id="$sx.navindex.items.items.id$"><a href="$sx.navindex.items.items.link$">$sx.navindex.items.items.display$</a></li>
 $endfor$
       </ul>
 $endif$
