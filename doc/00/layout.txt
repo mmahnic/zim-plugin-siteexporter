@@ -12,9 +12,3 @@ publish: false
 	* css files
 	* other files that go into site resources
 
-[*] The exporter will use the default template (default.html5) and css (default.css) to generate the site unless there exists a special template for the page or its parent. If the path to the page is "root:subpage:subsub" the template is named "root.subpage.subsub.html5". 
-[*] Each page type can have a separate template
-[ ] Define a template for subtrees
-	* child-template - the template for all the descendants
-
-
