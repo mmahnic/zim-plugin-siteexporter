@@ -8,6 +8,7 @@ import zim.formats
 import yaml
 
 from news import NewsPageProcessor
+from templates import TemplateProcessor
 import sxpage
 
 import logging
@@ -36,8 +37,7 @@ class SiteExporter:
         self.zimNotebookDir = exportData.notebook.layout.root
         self.layout = None
         self.homepage = None
-        # Variables that need translations in Pandoc templates
-        self.translatedVars = {}
+        self.templateProc = TemplateProcessor()
 
 
     # from zim.export
@@ -94,11 +94,11 @@ class SiteExporter:
             templates.add(self.getPageTemplate(page))
 
         for templateFn in templates:
-            self.preprocessTemplate(templateFn)
+            self.templateProc.processTemplate(templateFn)
 
         for page in self.mkdPages:
             if page.isPublished():
-                page.completeExtraAttrs( self.exportData, self.translatedVars )
+                page.completeExtraAttrs( self.exportData, self.templateProc.translatedVars )
                 self._writeExtraAttrs( page )
 
         self.makeHtml( self.mkdPages )
@@ -189,53 +189,6 @@ class SiteExporter:
             if page.style is None:
                 pate.style = "default.css"
         return page.style
-
-
-    # Process [@ ... @] instructions in the template. TODO: move to a class
-    def preprocessTemplate( self, templateFilename ):
-        if not os.path.exists( templateFilename ):
-            return
-        with open( templateFilename ) as f:
-            lines = f.readlines()
-
-        rxinclude = re.compile( r"^\s*\[@\s*include\s+([^@\]]+)@\]\s*$" )
-        res = []
-
-        for line in lines:
-            mo = rxinclude.match( line )
-            if mo is None:
-                res.append( line )
-            else:
-                fn = os.path.join( os.path.dirname( templateFilename ), mo.group(1).strip() )
-                if not os.path.exists( fn ):
-                    res.append( line )
-                    res.append( "FAILED: no {}\n".format( fn ) )
-                else:
-                    with open( fn ) as f:
-                        res.extend( f.readlines() )
-
-        rxtranslate = re.compile( r"\[@\s*tr\s+([-_a-zA-Z0-9]+)(\s+[^@\]]+)\s*@\]" )
-        lines = res
-        res = []
-
-        for line in lines:
-            # TODO: replace all matches
-            mo = rxtranslate.search( line )
-            if mo is None:
-                res.append( line )
-            else:
-                var = mo.group(1)
-                default = mo.group(2).strip()
-                self.addTranslatedVariable( var, default )
-                res.append( "{}$sx.tr.{}${}".format( line[:mo.start()], var, line[mo.end():] ) )
-
-        with open( templateFilename, "w" ) as f:
-            f.write( "".join( res ) )
-
-
-    def addTranslatedVariable( self, var, default ):
-        if not var in self.translatedVars:
-            self.translatedVars[var] = default
 
 
     def getPageProcessor( self, page ):
