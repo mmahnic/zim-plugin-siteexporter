@@ -3,3 +3,7 @@ A plugin for Zim-wiki that adds support for YAML attributes and uses them to
 export a site with Pandoc. Each exported page can be rendered with a different
 template.
 
+Templates can be built from smaller parts that are shared between different templates.
+
+Static texts in templates can be translated to the language of the exported pages.
+
