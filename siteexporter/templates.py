@@ -27,6 +27,14 @@ class TemplateProcessor:
         with open( templateFilename ) as f:
             lines = f.readlines()
 
+        lines = self.includeTemplateChunks( lines, os.path.dirname( templateFilename ) )
+        lines = self.prepareTranslatedVariables( lines )
+
+        with open( templateFilename, "w" ) as f:
+            f.write( "".join( lines ) )
+
+
+    def includeTemplateChunks( self, lines, baseDir ):
         rxinclude = re.compile( r"^\s*\[@\s*include\s+([^@\]]+)@\]\s*$" )
         res = []
 
@@ -35,16 +43,19 @@ class TemplateProcessor:
             if mo is None:
                 res.append( line )
             else:
-                fn = os.path.join( os.path.dirname( templateFilename ), mo.group(1).strip() )
+                fn = os.path.join( baseDir, mo.group(1).strip() )
                 if not os.path.exists( fn ):
                     res.append( line )
                     res.append( "FAILED: no {}\n".format( fn ) )
                 else:
                     with open( fn ) as f:
                         res.extend( f.readlines() )
+        return res
 
+
+    # Rewrite [@ tr var default @] --> $sx.tr.var$ and register the variables in translatedVars.
+    def prepareTranslatedVariables( self, lines ):
         rxtranslate = re.compile( r"\[@\s*tr\s+([-_a-zA-Z0-9]+)(\s+[^@\]]+)\s*@\]" )
-        lines = res
         res = []
 
         for line in lines:
@@ -58,8 +69,7 @@ class TemplateProcessor:
                 self.addTranslatedVariable( var, default )
                 res.append( "{}$sx.tr.{}${}".format( line[:mo.start()], var, line[mo.end():] ) )
 
-        with open( templateFilename, "w" ) as f:
-            f.write( "".join( res ) )
+        return res
 
 
     def addTranslatedVariable( self, var, default ):
