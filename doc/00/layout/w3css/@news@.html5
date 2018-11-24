@@ -39,7 +39,7 @@ $for(sx.news-activeitems)$
   <a class="header-wrap" href="$sx.news-activeitems.link$">
    <header class="newsitem-button w3-light-grey">
       <h5>$sx.news-activeitems.title$</h5>
-      $if(sx.news-activeitems.date)$<div class="newsitem-date">Published $sx.news-activeitems.date$</div>$endif$
+      $if(sx.news-activeitems.date)$<div class="newsitem-date">[@tr news-published Published @] $sx.news-activeitems.date$</div>$endif$
    </header>
   </a>
 <div class="w3-container">
