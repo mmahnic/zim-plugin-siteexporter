@@ -1,7 +1,5 @@
 from zim.notebook.page import Path
 from pageattributes import loadYamlAttributes
-from translation import Translations
-import locale
 
 # The id of the root config page. Different configurations are stored under
 # this page. The "active" property of the base config page defines the actual
@@ -12,7 +10,6 @@ rootConfigPage = None
 class Configuration:
     def __init__(self, zimPage, notebook):
         self.notebook = notebook
-        self.translations = None
         self.zimPage = zimPage
         self.attrs = loadYamlAttributes( zimPage )
         self.parent = None
@@ -37,17 +34,6 @@ class Configuration:
             return self.parent.getValue( name, default )
         else:
             return default
-
-    def getDefaultLanguage( self ):
-        if self.hasValue( "lang" ):
-            return self.getValue( "lang" )
-        return locale.getdefaultlocale()[0][:2]
-
-    def getTranslation( self, lang, var, default ):
-        if self.translations is None:
-            self.translations = Translations( self )
-
-        return self.translations.getTranslation( lang, var, default )
 
 
 def getActiveConfiguration( notebook ):

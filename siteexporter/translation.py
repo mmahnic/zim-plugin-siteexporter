@@ -1,5 +1,6 @@
 from zim.notebook.page import Path
 from pageattributes import loadYamlAttributes
+import locale
 
 import logging
 lwarn = logging.warning
@@ -13,6 +14,12 @@ class Translations:
     def __init__( self, config ):
         self.config = config
         self.translations = {}
+
+
+    def getDefaultLanguage( self ):
+        if self.config.hasValue( "lang" ):
+            return self.config.getValue( "lang" )
+        return locale.getdefaultlocale()[0][:2]
 
 
     def getTranslation( self, lang, var, default ):

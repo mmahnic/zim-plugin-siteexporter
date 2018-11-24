@@ -5,6 +5,7 @@ from zim.actions import action
 from zim.applications import Application
 
 from .exporter import SiteExporter, pandoccmd
+from .exportdata import ExporterData
 
 try:
     import yaml
@@ -50,6 +51,6 @@ class MainWindowExtension(WindowExtension):
     @action(_('E_xport Site')) # T: menu item
     def exportSite(self):
         """Export Notebook"""
-        exporter = SiteExporter()
-        exporter.export(self.window.ui.notebook)
+        exporter = SiteExporter(ExporterData(self.window.ui.notebook))
+        exporter.export()
         pass

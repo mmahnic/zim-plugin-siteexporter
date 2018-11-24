@@ -130,7 +130,7 @@ class MarkdownPage:
             self.extraAttrs[k] = v
 
     # Called just before the extra attributes will be written to the output
-    def completeExtraAttrs( self, config, translatedVars ):
+    def completeExtraAttrs( self, exportData, translatedVars ):
         # Add a title if it does not exist in the attributes
         if "title" not in self.extraAttrs:
             self.extraAttrs["title"] = self.title
@@ -144,18 +144,20 @@ class MarkdownPage:
             else:
                 meta = ""
 
+            config = exportData.config
             hasConfig = config is not None
             meta_prefix = config.getValue( "titlePrefix", "" ) if hasConfig else ""
             meta_suffix = config.getValue( "titleSuffix", "" ) if hasConfig else ""
             self.extraAttrs["meta-title"] = "{}{}{}".format( meta_prefix, meta, meta_suffix )
 
         if len(translatedVars) > 0:
+            trans = exportData.trans
             lang = self.getPageLanguage()
             if lang is None:
-                lang = config.getDefaultLanguage()
+                lang = trans.getDefaultLanguage()
             tr = {}
             for var,default in translatedVars.items():
-                tr[var] = config.getTranslation( lang, var, default )
+                tr[var] = trans.getTranslation( lang, var, default )
             self.extraAttrs["tr"] = tr
 
 
@@ -214,12 +216,12 @@ class IndexEntry:
 
 
 class SiteExporter:
-    def __init__(self):
+    def __init__(self, exportData):
+        self.exportData = exportData
         self.mkdPages = None
-        self.config = None
+        self.config = exportData.config
+        self.zimNotebookDir = exportData.notebook.layout.root
         self.layout = None
-        self.configPageId = "00:00.config"
-        self.zimNotebookDir = None
         self.homepage = None
         # Variables that need translations in Pandoc templates
         self.translatedVars = {}
@@ -245,12 +247,10 @@ class SiteExporter:
         return MultiFileExporter(layout, template, format, **opts)
 
 
-    def export(self, notebook):
-        self.zimNotebookDir = notebook.layout.root
-        self.config = getActiveConfiguration( notebook )
+    def export(self):
         exporter = self.build_notebook_exporter( exportPath, "Default" )
         from zim.export.selections import AllPages
-        pages = AllPages(notebook)
+        pages = AllPages(self.exportData.notebook)
 
         self.mkdPages = [ MarkdownPage( p ) for p in pages if p.exists() ]
         self.findPageParents( self.mkdPages )
@@ -285,7 +285,7 @@ class SiteExporter:
 
         for page in self.mkdPages:
             if page.isPublished():
-                page.completeExtraAttrs( self.config, self.translatedVars )
+                page.completeExtraAttrs( self.exportData, self.translatedVars )
                 self._writeExtraAttrs( page )
 
         self.makeHtml( self.mkdPages )
@@ -588,7 +588,7 @@ class SiteExporter:
         hasConfig = config is not None
         pubdir = config.getValue( "pubdir" ) if hasConfig else None
         if pubdir is None:
-            raise Exception( "Value 'pubdir' is not set on the config page '{}'".format( self.configPageId ) )
+            raise Exception( "Value 'pubdir' is not set on the config page '{}'".format( config.configPageId ) )
 
         if not os.path.isabs( pubdir ):
             pubdir = os.path.normpath( os.path.join( self.zimNotebookDir.encodedpath, pubdir ) )
