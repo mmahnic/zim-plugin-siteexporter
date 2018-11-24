@@ -481,7 +481,7 @@ class SiteExporter:
                 j += 1
             break
 
-        mkdLines.insert( 0, [ "---\n", "---\n", "\n" ])
+        mkdLines[0:0] = [ "---\n", "---\n", "\n" ]
         return 1
 
     def _writeExtraAttrs( self, page ):
