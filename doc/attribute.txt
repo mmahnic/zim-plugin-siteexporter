@@ -11,7 +11,7 @@ Page attributes are defined in YAML blocks of code at the beginning of each page
 Attributes are inherited from parent pages. Attributes defined in a child page override the same attributes defined in parent pages. Dictionary and list attributes are not merged. Instead, a top-level attribute of the parent is replaced with a new one with the same name from the child.
 
 * title
-* meta_title
+* metaTitle
 * menu
 * weight
 * publish

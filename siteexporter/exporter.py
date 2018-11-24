@@ -37,6 +37,7 @@ class MarkdownPage:
         self.level = len(self.path)
         self.weight = 999999
         self.title = self.zimPage.get_title()
+        self.lang = None
         self.metaTitle = self.title
         self.menuText = None
         self.pageType = "page"
@@ -74,6 +75,13 @@ class MarkdownPage:
             return []
         return [ self.parentId(i) for i in range(1, len(self.path)) ]
 
+    def getPageLanguage( self ):
+        if self.lang is not None:
+            return self.lang
+        if self.parent is not None:
+            return self.parent.getPageLanguage()
+        return None
+
     def setAttributes( self, attrs ):
         if type(attrs) != type({}):
             lwarn( "Attributes are not a dictionary. Page: '{}'".format( self.id ) )
@@ -83,6 +91,9 @@ class MarkdownPage:
 
         if "title" in attrs:
             self.title = attrs["title"]
+
+        if "lang" in attrs:
+            self.lang = attrs["lang"]
 
         if "metaTitle" in attrs:
             self.metaTitle = attrs["metaTitle"]
@@ -119,7 +130,7 @@ class MarkdownPage:
             self.extraAttrs[k] = v
 
     # Called just before the extra attributes will be written to the output
-    def completeExtraAttrs( self, config ):
+    def completeExtraAttrs( self, config, translatedVars ):
         # Add a title if it does not exist in the attributes
         if "title" not in self.extraAttrs:
             self.extraAttrs["title"] = self.title
@@ -137,6 +148,16 @@ class MarkdownPage:
             meta_prefix = config.getValue( "titlePrefix", "" ) if hasConfig else ""
             meta_suffix = config.getValue( "titleSuffix", "" ) if hasConfig else ""
             self.extraAttrs["meta-title"] = "{}{}{}".format( meta_prefix, meta, meta_suffix )
+
+        if len(translatedVars) > 0:
+            lang = self.getPageLanguage()
+            if lang is None:
+                lang = config.getDefaultLanguage()
+            tr = {}
+            for var,default in translatedVars.items():
+                tr[var] = config.getTranslation( lang, var, default )
+            self.extraAttrs["tr"] = tr
+
 
         # Copy original attributes to extra attributes if they are not defined in extra
         for k,v in self.attrs.items():
@@ -200,6 +221,8 @@ class SiteExporter:
         self.configPageId = "00:00.config"
         self.zimNotebookDir = None
         self.homepage = None
+        # Variables that need translations in Pandoc templates
+        self.translatedVars = {}
 
 
     # from zim.export
@@ -253,17 +276,17 @@ class SiteExporter:
                 self.addPageIndex( page, index )
                 self.addPageStyle( page )
 
-        for page in self.mkdPages:
-            if page.isPublished():
-                page.completeExtraAttrs( self.config )
-                self._writeExtraAttrs( page )
-
         templates = set([])
         for page in self.mkdPages:
             templates.add(self.getPageTemplate(page))
 
         for templateFn in templates:
             self.preprocessTemplate(templateFn)
+
+        for page in self.mkdPages:
+            if page.isPublished():
+                page.completeExtraAttrs( self.config, self.translatedVars )
+                self._writeExtraAttrs( page )
 
         self.makeHtml( self.mkdPages )
         self.copyFilesToPubDir()
@@ -309,6 +332,11 @@ class SiteExporter:
                     f.parent = pf
                     break
 
+    def getPageLanguage( self, page ):
+        lang = page.getPageLanguage()
+        if lang is not None:
+            return lang
+        return self.config.getDefaultLanguage()
 
     # Layout file: template, css, ...
     def _discoverLayoutFile( self, page, ext ):
@@ -373,8 +401,28 @@ class SiteExporter:
                     with open( fn ) as f:
                         res.extend( f.readlines() )
 
+        rxtranslate = re.compile( r"\[@\s*tr\s+([-_a-zA-Z0-9]+)(\s+[^@\]]+)\s*@\]" )
+        lines = res
+        res = []
+
+        for line in lines:
+            # TODO: replace all matches
+            mo = rxtranslate.search( line )
+            if mo is None:
+                res.append( line )
+            else:
+                var = mo.group(1)
+                default = mo.group(2).strip()
+                self.addTranslatedVariable( var, default )
+                res.append( "{}$sx.tr.{}${}".format( line[:mo.start()], var, line[mo.end():] ) )
+
         with open( templateFilename, "w" ) as f:
             f.write( "".join( res ) )
+
+
+    def addTranslatedVariable( self, var, default ):
+        if not var in self.translatedVars:
+            self.translatedVars[var] = default
 
 
     def getPageProcessor( self, page ):

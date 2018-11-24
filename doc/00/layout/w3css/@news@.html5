@@ -44,7 +44,7 @@ $for(sx.news-activeitems)$
   </a>
 <div class="w3-container">
 $sx.news-activeitems.brief$
-<a href="$sx.news-activeitems.link$"> more...</a>
+<a href="$sx.news-activeitems.link$"> [@tr news-readmore More...@]</a>
 </div>
 </article>
 </div>

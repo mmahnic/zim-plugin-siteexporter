@@ -1,0 +1,8 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2018-11-24T15:37:50+01:00
+
+====== English ======
+---
+news-readmore: "More..."
+---
