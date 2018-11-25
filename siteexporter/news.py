@@ -18,6 +18,7 @@ import os
 import datetime
 
 ARCHIVETYPE = "news.archive"
+INDEXTYPE = "news.index"
 
 class NewsPageProcessor:
     def __init__(self):
@@ -42,12 +43,10 @@ class NewsPageProcessor:
         for p in childs:
             if p.isExpired( today ):
                 continue
-            if self.isInArchive( p ):
+            if self.isInArchive( p ) or self.isIndexPage( p ):
                 continue
 
             pubDate = p.getPublishDate()
-            if pubDate is not None and pubDate > today.date():
-                continue
 
             descr = {
                     "id": p.id,
@@ -55,6 +54,7 @@ class NewsPageProcessor:
                     "link": makeRelative(p.htmlFilename),
                     "brief": self.getBriefDescription( p )
                     }
+            # TODO: The date should be translatable. Use a strptime format.
             if pubDate is not None:
                 descr["date"] = "{}.{}.{}".format( pubDate.day, pubDate.month, pubDate.year )
 
@@ -70,6 +70,10 @@ class NewsPageProcessor:
         parents = [ self.findPage(id) for id in page.getParentIds() ]
 
         return any( [ p.pageType == ARCHIVETYPE for p in parents if p is not None ] )
+
+
+    def isIndexPage( self, page ):
+        return page.pageType == INDEXTYPE
 
 
     def findPage( self, pageId ):

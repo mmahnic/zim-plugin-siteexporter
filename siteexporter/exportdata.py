@@ -16,10 +16,12 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 from config import getActiveConfiguration
 from translation import Translations
+import datetime
 
 class ExporterData:
     def __init__( self, notebook ):
         self.notebook = notebook
         self.config = getActiveConfiguration( notebook )
         self.trans = Translations( self.config )
+        self.now = datetime.datetime.now()
 

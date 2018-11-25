@@ -81,7 +81,7 @@ class SiteExporter:
         from zim.export.selections import AllPages
         pages = AllPages(self.exportData.notebook)
 
-        self.mkdPages = [ sxpage.MarkdownPage( p ) for p in pages if p.exists() ]
+        self.mkdPages = [ sxpage.MarkdownPage( p, self.exportData ) for p in pages if p.exists() ]
         self.findPageParents( self.mkdPages )
 
         # The iterator returns the page BEFORE it is exported :/

@@ -25,9 +25,10 @@ htmlExtension = "html"
 exportPath = "/tmp/site" # TODO: depends on the system, may be configured by the user, may include notebook name
 
 class MarkdownPage:
-    def __init__( self, zimPage ):
+    def __init__( self, zimPage, exportData ):
         """@p filename is relative to exportPath."""
         self.zimPage = zimPage
+        self.exportData = exportData
         self.path = zimPage.parts # a list of parts that compose the path
         self.filename = "{}.{}".format( "/".join(self.path), mkdExtension )
         self.htmlFilename = "{}.{}".format("/".join(self.path), htmlExtension)
@@ -47,6 +48,7 @@ class MarkdownPage:
         self.createDate = None
         self.expireDate = None
         self.publishDate = None
+        self.unpublishDate = None
         self.template = None
         self.style = None
         self.extraAttrs = {}
@@ -124,6 +126,8 @@ class MarkdownPage:
             self.expireDate = attrs["expireDate"].toordinal()
         if "publishDate" in attrs:
             self.publishDate = attrs["publishDate"].toordinal()
+        if "unpublishDate" in attrs:
+            self.unpublishDate = attrs["unpublishDate"].toordinal()
 
 
     def addExtraAttrs( self, attrDict ):
@@ -167,13 +171,35 @@ class MarkdownPage:
             if v is not None and not k in self.extraAttrs:
                 self.extraAttrs[k] = v
 
-    def isPublished( self ):
-        return self.published and not self.isDraft and (self.parent is None or self.parent.isPublished())
 
-    def isExpired( self, dateTime ):
+    def isPublished( self, dateTime=None  ):
+        if not self.published or self.isDraft:
+            return False
+
+        if dateTime is None:
+            dateTime = self.exportData.now
+
+        if dateTime.toordinal() < self.getPublishDate().toordinal():
+            return False
+
+        if self.unpublishDate is not None and dateTime.toordinal() >= self.unpublishDate:
+            return False
+
+        if self.parent is not None and not self.parent.isPublished():
+            return False
+
+        return True
+
+
+    def isExpired( self, dateTime=None ):
         if self.expireDate is None:
             return False
+
+        if dateTime is None:
+            dateTime = self.exportData.now
+
         return dateTime.toordinal() >= self.expireDate
+
 
     def getCreationDate( self ):
         if self.createDate is not None:
