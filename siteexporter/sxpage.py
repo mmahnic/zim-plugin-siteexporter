@@ -73,6 +73,9 @@ class MarkdownPage:
                 return False
         return True
 
+    def isChildOf( self, page ):
+        return self.parent is not None and self.parent == page
+
     def getParentIds( self ):
         if len(self.path) < 2:
             return []

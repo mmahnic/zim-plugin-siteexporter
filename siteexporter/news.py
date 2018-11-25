@@ -20,48 +20,40 @@ import datetime
 ARCHIVETYPE = "news.archive"
 INDEXTYPE = "news.index"
 
-class NewsPageProcessor:
-    def __init__(self):
-        self.pages = None
-        pass
+def getBriefDescription( page ):
+    mkdLines = page.getMarkdown()
 
-    def digest( self, page, pages, newPages ):
+    brief = []
+    inYaml = False
+    moreFound = False
+    for line in mkdLines:
+        if inYaml:
+            if line.rstrip() in ( "---", "..." ):
+                inYaml = False
+        else:
+            if line.rstrip() == "---":
+                inYaml = True
+                continue
+            l = line.strip()
+            if l.startswith( "#" ) or l.startswith( "```" ) or l.startswith("~~~"):
+                break
+            if l == "<!--more-->":
+                moreFound = True
+                break
+            brief.append( line )
+
+    if moreFound:
+        return "".join(brief).strip()
+
+    lens = [len(l.strip()) for l in brief]
+    cumlens = [sum(lens[:i]) for i in range(len(lens))]
+    goodLens = [l for l in cumlens if l < 300]
+    return "".join( brief[:len(goodLens)] ).strip()
+
+
+class PageInfoFinder:
+    def __init__(self, pages):
         self.pages = pages
-        today = datetime.datetime.now()
-        childs = [ p for p in pages
-            if p.isPublished() and p.isDescendantOf( page ) ]
-        if len(childs) == 0:
-            return
-
-        childs.sort( key=lambda p: p.getCreationDate(), reverse=True )
-
-        curDir = os.path.dirname( page.htmlFilename )
-        def makeRelative( path ):
-            return os.path.relpath( path, curDir )
-
-        childAttrs = []
-        for p in childs:
-            if p.isExpired( today ):
-                continue
-            if self.isInArchive( p ) or self.isIndexPage( p ):
-                continue
-
-            pubDate = p.getPublishDate()
-
-            descr = {
-                    "id": p.id,
-                    "title": p.title,
-                    "link": makeRelative(p.htmlFilename),
-                    "brief": self.getBriefDescription( p )
-                    }
-            # TODO: The date should be translatable. Use a strptime format.
-            if pubDate is not None:
-                descr["date"] = "{}.{}.{}".format( pubDate.day, pubDate.month, pubDate.year )
-
-            childAttrs.append( descr )
-
-        page.addExtraAttrs( { "news-activeitems": childAttrs } )
-
 
     def isInArchive( self, page ):
         if page.pageType == ARCHIVETYPE:
@@ -82,33 +74,75 @@ class NewsPageProcessor:
                 return p
 
 
-    def getBriefDescription( self, page ):
-        mkdLines = page.getMarkdown()
 
-        brief = []
-        inYaml = False
-        moreFound = False
-        for line in mkdLines:
-            if inYaml:
-                if line.rstrip() in ( "---", "..." ):
-                    inYaml = False
-            else:
-                if line.rstrip() == "---":
-                    inYaml = True
-                    continue
-                l = line.strip()
-                if l.startswith( "#" ) or l.startswith( "```" ) or l.startswith("~~~"):
-                    break
-                if l == "<!--more-->":
-                    moreFound = True
-                    break
-                brief.append( line )
+class NewsPageProcessor:
+    def digest( self, page, pages, newPages ):
+        pageInfo = PageInfoFinder( pages )
+        childs = [ p for p in pages
+            if p.isPublished() and p.isDescendantOf( page ) ]
+        if len(childs) == 0:
+            return
 
-        if moreFound:
-            return "".join(brief).strip()
+        childs.sort( key=lambda p: p.getCreationDate(), reverse=True )
 
-        lens = [len(l.strip()) for l in brief]
-        cumlens = [sum(lens[:i]) for i in range(len(lens))]
-        goodLens = [l for l in cumlens if l < 300]
-        return "".join( brief[:len(goodLens)] ).strip()
+        curDir = os.path.dirname( page.htmlFilename )
+        def makeRelative( path ):
+            return os.path.relpath( path, curDir )
+
+        childAttrs = []
+        for p in childs:
+            if p.isExpired():
+                continue
+            if pageInfo.isIndexPage( p ) or pageInfo.isInArchive( p ):
+                continue
+
+            pubDate = p.getPublishDate()
+
+            descr = {
+                    "id": p.id,
+                    "title": p.title,
+                    "link": makeRelative(p.htmlFilename),
+                    "brief": getBriefDescription( p )
+                    }
+            # TODO: The date should be translatable. Use a strptime format.
+            if pubDate is not None:
+                descr["date"] = "{}.{}.{}".format( pubDate.day, pubDate.month, pubDate.year )
+
+            childAttrs.append( descr )
+
+        page.addExtraAttrs( { "news-activeitems": childAttrs } )
+
+
+class NewsIndexPageProcessor:
+    def digest( self, page, pages, newPages ):
+        pageInfo = PageInfoFinder( pages )
+        childs = [ p for p in pages
+            if not pageInfo.isIndexPage(p) and p.isPublished() and p.isChildOf( page ) ]
+        if len(childs) == 0:
+            return
+
+        childs.sort( key=lambda p: p.getCreationDate(), reverse=True )
+
+        curDir = os.path.dirname( page.htmlFilename )
+        def makeRelative( path ):
+            return os.path.relpath( path, curDir )
+
+        childAttrs = []
+        for p in childs:
+            pubDate = p.getPublishDate()
+
+            descr = {
+                    "id": p.id,
+                    "title": p.title,
+                    "link": makeRelative(p.htmlFilename),
+                    "brief": getBriefDescription( p )
+                    }
+            # TODO: The date should be translatable. Use a strptime format.
+            if pubDate is not None:
+                descr["date"] = "{}.{}.{}".format( pubDate.day, pubDate.month, pubDate.year )
+
+            childAttrs.append( descr )
+
+        page.addExtraAttrs( { "news-indexitems": childAttrs } )
+
 
