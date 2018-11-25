@@ -4,6 +4,7 @@ Creation-Date: 2018-11-04T18:14:09+01:00
 
 ====== Configuration ======
 ---
+lang: en
 titlePrefix: "Zim Help: "
 titleSuffix: " | Site Exporter"
 home: "index"
@@ -13,6 +14,7 @@ active: "example"
 ==== Site Exporter Attributes ====
 Attributes are inherited from the parent pages. The attributes defined in the child page override the attributes defined in parent pages. Dictionary and list attributes are not merged. The top-level attribute is replaced with a new one, instead.
 
+* //lang//: the default language of the site. If the default language is not set and an exported page does not define the //lang// attribute, the current system locale language will be used.
 * //publish//: boolean; //true// if the page and subpages should be published, //false// otherwise. A child page can not be published if the parent is not published.
 * //home//: an absolute Zim path to the page that is the homepage of the site.
 * //active//: a relative Zim path to the active configuration for the site exporter.

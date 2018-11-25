@@ -9,6 +9,7 @@ publish: false
 
 * Layouts for the generated site
 	* pandoc templates
+	* translations for the templates
 	* css files
 	* other files that go into site resources
 

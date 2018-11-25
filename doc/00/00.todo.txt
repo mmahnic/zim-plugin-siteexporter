@@ -11,4 +11,7 @@ publish: false
 [*] Each page type can have a separate template
 [ ] Define a ~~template~~ page type for subtrees
 	* ~~childTemplate~~ childType - the default ~~template~~ page type for all the descendants
-[ ] Templates should be able to use translated texts
+[*] Templates should be able to use translated texts
+[ ] Add 'index' type that generates a list of children of a page. Similar to 'news' but finds children only.
+[ ] Support multiple translated variables in a single line
+[ ] The format of the date for active news items should be configurable

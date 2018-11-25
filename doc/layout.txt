@@ -1,0 +1,12 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2018-11-25T12:14:33+01:00
+
+====== Layout ======
+---
+menu: "Layout"
+---
+
+A layout defines a set of templates and resources that are used to generate the site.
+A layout is selected with the //layout// attribute of the current [[:configuration|configuration]].
+The layouts are usually stored under [[00:layout]].

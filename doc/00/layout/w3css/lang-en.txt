@@ -7,3 +7,5 @@ Creation-Date: 2018-11-24T15:37:50+01:00
 news-readmore: "More..."
 news-published: "Published"
 ---
+
+Note: the //news-readmore// and //news-published// variables are used in //@news@.html5// template.

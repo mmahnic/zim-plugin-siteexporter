@@ -7,16 +7,17 @@ Creation-Date: 2018-11-20T22:05:45+01:00
 menu: Attributes
 ---
 
-Page attributes are defined in YAML blocks of code at the beginning of each page. 
-Attributes are inherited from parent pages. Attributes defined in a child page override the same attributes defined in parent pages. Dictionary and list attributes are not merged. Instead, a top-level attribute of the parent is replaced with a new one with the same name from the child.
+Page attributes are defined in YAML blocks of code at the beginning of a page. The values of some attributes are taken from parent pages if they are not defined on a page.
 
-* title
-* metaTitle
-* menu
-* weight
-* publish
-* draft
-* createDate
-* publishDate
-* expireDate
-* type
+* //title// - The title of the page. If it is not set, the Zim page title is used.
+* //metaTitle// - Explicitly set the the HTML head title. If it is not set the //title// is used as //metaTitle//. This attribute is rarely used.
+* //menu// - Set the string that will be displayed in the menu. If //menu// is not set the page will not appear in the menu. See [[:menu|menu]].
+* //weight// - Set the order of an item in the generated menu. See [[:menu|menu]].
+* //publish// - When set to '//true//' the page will be published. When set to '//false//' the final page will not be generated. The //publish// attribute is inherited from parent pages if it is not defined. The attributes //publishDate// and //unpublishDate// may override the value of //publish// when //publish// is '//true//'.
+* //draft// -  When set to 'true' the page is a draft and will not be published. The final page will not be generated. The //publish// attribute is inherited from parent pages if it is not defined.
+* //createDate// - The date when a page was created. If it is not set explicitly the Zim page attribute will be used. 
+* //expireDate// - The date when a page will become old. This can be used in news and blogs to remove the page from lists of latest items.
+* //publishDate// - The date when a page should be published. The final page will not be generated before this date. Creation date is used if this is not set. The //publishDate// attribute is inherited from parent pages if it is not defined.
+* //unpublishDate// - The date after which a page will not be published any more. The final page will not be generated after this date.  The //unpublishDate// attribute is inherited from parent pages if it is not defined.
+* //type// - The type of the page. A custom page processor will be selected for a page type if was registered. Custom template and CSS page will be selected for a page type if it exists unless they are explicitly defined for the page. See [[:page-type|page-type]].
+* //lang// - The language of the page. This affects the translation of variables gathered during the template processing phase. The //lang// attribute is inherited from parent pages if it is not defined. If no parent has the //lang// attribute set, the default language is obtained from the configuration.

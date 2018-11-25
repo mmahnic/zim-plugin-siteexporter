@@ -17,4 +17,6 @@ If a //type// attribute is defined for the page, the exporter checks if a templa
 If no specific templates are found, the template 'default.html5' is used.
 
 ==== Pandoc template preprocessing ====
-When multiple templates are defined in a layout, some parts of the templates repeat in many templates. To simplify the maintenance of templates, these can be combined from multiple files. The directive [@include //<filename>//@] replaces the directive with the contents of the file //<filename>//. The included files usually have the extension '.htmli'. The templates are processed in arbitrary order and in-place so multi-level inclusion is not supported.
+When multiple templates are defined in a layout, some parts of the templates repeat in many templates. To simplify the maintenance of templates, these can be combined from multiple files. The preprocessor replaces the directive ''[@include <filename>@]'' with the contents of the file //<filename>//. The included files usually have the extension '.htmli'. The templates are processed in arbitrary order and in-place so multi-level inclusion is not supported.
+
+Templates can include static text that should be translated for different languages.  The preprocesor replaces the directive ''[@tr variable Default-Text @]'' with the pandoc placeholder ''$sx.tr.variable$'' and registeres a translation variable. The variable will hold the translated value for each page based on the page's language.
