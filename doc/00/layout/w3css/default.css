@@ -23,3 +23,11 @@ overflow:hidden; text-decoration:none; color:inherit; background-color:inherit; 
 .newsitem-button:hover{color:#000!important;background-color:#ccc!important}
 
 a.header-wrap { text-decoration: none; }
+
+#main-wrapper { max-width: 42em; float: left; }
+#index-wrapper { max-width: 21em; float: left; }
+#index-wrapper header { font-size: 80%; }
+#index-wrapper nav { font-size: 80%; }
+
+img.float-left { float: left; margin-right: 1em; margin-bottom: 1em; }
+img.float-right { float: right; margin-left: 1em; margin-bottom: 1em; }

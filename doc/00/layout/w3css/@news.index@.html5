@@ -9,7 +9,7 @@ $endfor$
 
 [@include navigationbar.htmli@]
 
-<div id="main-wrapper" class="w3-container">
+<div id="main-wrapper" class="w3-container"> 
 $if(sx.title)$
 <header id="title-block-header">
 <h1 class="title">$sx.title$</h1>
@@ -31,8 +31,31 @@ $table-of-contents$
 $endif$
 <main>
 $body$
-</main>
+
+$if(sx.news-indexitems)$
+$for(sx.news-indexitems)$
+<div class="w3-card">
+<article>
+  <a class="header-wrap" href="$sx.news-indexitems.link$">
+   <header class="newsitem-button w3-light-grey">
+      <h5>$sx.news-indexitems.title$</h5>
+      $if(sx.news-indexitems.date)$<div class="newsitem-date">[@tr news-published Published @] $sx.news-indexitems.date$</div>$endif$
+   </header>
+  </a>
+<div class="w3-container">
+$sx.news-indexitems.brief$
+<a href="$sx.news-indexitems.link$"> [@tr news-readmore More...@]</a>
 </div>
+</article>
+</div>
+<br>
+$endfor$
+$endif$
+</main>
+
+</div>
+[@include newsarchiveindex.htmli@]
+
 $for(include-after)$
 $include-after$
 $endfor$

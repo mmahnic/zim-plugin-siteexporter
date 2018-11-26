@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"$if(lang)$lang="$lang$" xml:lang="$lang$"$endif$$if(dir)$ dir="$dir$"$endif$>
 [@include htmlhead.htmli@]
-<body class="w3-content w3-left" style="max-width:42em">
+<body class="w3-content w3-left">
 <div class="w3-panel w3-white">&nbsp;</div>
 $for(include-before)$
 $include-before$
@@ -9,10 +9,10 @@ $endfor$
 
 [@include navigationbar.htmli@]
 
-<div id="main-wrapper" class="w3-container">
+<div id="main-wrapper" class="w3-container"> 
 $if(sx.title)$
 <header id="title-block-header">
-<h1 class="sx.title">$title$</h1>
+<h1 class="title">$sx.title$</h1>
 $if(sx.subtitle)$
 <p class="subtitle">$sx.subtitle$</p>
 $endif$
@@ -50,10 +50,14 @@ $sx.news-activeitems.brief$
 </div>
 <br>
 $endfor$
+$else$
+[@tr news-nothingnew No new messages@].
 $endif$
 </main>
 
 </div>
+[@include newsarchiveindex.htmli@]
+
 $for(include-after)$
 $include-after$
 $endfor$
