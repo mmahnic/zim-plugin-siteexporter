@@ -16,6 +16,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 from config import getActiveConfiguration
 from translation import Translations
+from processorfactory import PageTypeProcessorFactory, ProcessorRegistry
 import datetime
 
 class ExporterData:
@@ -24,4 +25,6 @@ class ExporterData:
         self.config = getActiveConfiguration( notebook )
         self.trans = Translations( self.config )
         self.now = datetime.datetime.now()
+        self.pageTypeProcFactory = PageTypeProcessorFactory()
+        ProcessorRegistry.registerPageTypes( self.pageTypeProcFactory )
 

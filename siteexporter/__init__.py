@@ -21,6 +21,9 @@ from zim.applications import Application
 from .exporter import SiteExporter, pandoccmd
 from .exportdata import ExporterData
 
+# This will register the news processors with the processor registry.
+import news
+
 try:
     import yaml
 except:

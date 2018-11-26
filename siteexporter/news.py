@@ -17,6 +17,8 @@
 import os
 import datetime
 
+from processorfactory import Processor, ProcessorRegistry
+
 ARCHIVETYPE = "news.archive"
 INDEXTYPE = "news.index"
 
@@ -75,7 +77,7 @@ class PageInfoFinder:
 
 
 
-class NewsPageProcessor:
+class NewsPageProcessor( Processor ):
     def digest( self, page, pages, newPages ):
         pageInfo = PageInfoFinder( pages )
         childs = [ p for p in pages
@@ -113,7 +115,7 @@ class NewsPageProcessor:
         page.addExtraAttrs( { "news-activeitems": childAttrs } )
 
 
-class NewsIndexPageProcessor:
+class NewsIndexPageProcessor( Processor ):
     def digest( self, page, pages, newPages ):
         pageInfo = PageInfoFinder( pages )
         childs = [ p for p in pages
@@ -145,4 +147,11 @@ class NewsIndexPageProcessor:
 
         page.addExtraAttrs( { "news-indexitems": childAttrs } )
 
+
+class Register(ProcessorRegistry):
+    def registerPageTypes(self, pageTypeProcFactory):
+        pageTypeProcFactory.registerPageType( "news", NewsPageProcessor.__name__ )
+        pageTypeProcFactory.registerPageType( "news.index", NewsIndexPageProcessor.__name__ )
+        pageTypeProcFactory.registerPageType( "blog", NewsPageProcessor.__name__ )
+        pageTypeProcFactory.registerPageType( "blog.index", NewsIndexPageProcessor.__name__ )
 

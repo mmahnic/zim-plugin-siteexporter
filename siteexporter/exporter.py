@@ -23,7 +23,6 @@ import zim.formats
 # REQUIRE: pyyaml
 import yaml
 
-from news import NewsPageProcessor, NewsIndexPageProcessor
 from templates import TemplateProcessor
 import sxpage
 
@@ -208,11 +207,7 @@ class SiteExporter:
 
 
     def getPageProcessor( self, page ):
-        if page.pageType == "news":
-            return NewsPageProcessor()
-        if page.pageType == "news.index":
-            return NewsIndexPageProcessor()
-        return None
+        return self.exportData.pageTypeProcFactory.getProcessor( page.pageType )
 
 
     def processExportedPage( self, page ):
