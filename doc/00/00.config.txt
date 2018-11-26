@@ -11,12 +11,16 @@ home: "index"
 active: "example"
 ---
 
-==== Site Exporter Attributes ====
-Attributes are inherited from the parent pages. The attributes defined in the child page override the attributes defined in parent pages. Dictionary and list attributes are not merged. The top-level attribute is replaced with a new one, instead.
+==== Site Exporter Configutration Attributes ====
+Configuration attributes are defined in YAML blocks near the beginning of a page. Configuration attributes are inherited from parent pages. Attributes defined in a child page override the attributes defined in parent pages. Dictionary and list attributes are not merged. The top-level attribute is replaced with a new one, instead.
 
-* //lang//: the default language of the site. If the default language is not set and an exported page does not define the //lang// attribute, the current system locale language will be used.
-* //publish//: boolean; //true// if the page and subpages should be published, //false// otherwise. A child page can not be published if the parent is not published.
+* //lang//: the default language of the site. If the default language is not set in configuration and an exported page does not define the //lang// attribute, the current system locale language will be used.
 * //home//: an absolute Zim path to the page that is the homepage of the site.
 * //active//: a relative Zim path to the active configuration for the site exporter.
-* //titlePrefix//, //tilteSuffix//: see [[:00:00.config:example|example.]]
+* //titlePrefix//: the string to prepend to the meta-title value.
+* //titleSuffix//: the string to append to the meta-title value.
+* //layout//: an absolute Zim path to the layout that will be used to generate the site. This attribute is usually defined in the active configuration page.
+* //pbudir//: the directory where the site should be built. Relative paths are relative to the root directory of the notebook. The pages are first exported to a temporary directory where they are processed. The generated final files are copied to //pubdir// afterwards.
 
+==== Translations for the templates ====
+Translations of template variables are stored in ''lang-xx'' pages under config and layout pages. Translantion pages are merged to generate the translation dictionary for a language: first the translation pages on the path to the active configuration are merged top to bottom, then the translation pages on the path to the active layout are merged.

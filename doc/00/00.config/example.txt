@@ -11,10 +11,6 @@ titlePrefix: "Zim Help: "
 titleSuffix: " | Site Exporter"
 ---
 
-==== Site Exporter Attributes ====
-* //lang//: the default language 
-* //layout//: absolute Zim path to the layout that will be used to generate the site.
-* //pbudir//: the directory where the site should be built. Relative paths are relative to the root directory of the notebook. The pages are first exported to a temporary directory where they are processed. The generated final files are copied to //pubdir// afterwards.
-* //titlePrefix//: the string to prepend to the meta-title value.
-* //titleSuffix//: the string to append to the meta-title value.
+
+
 

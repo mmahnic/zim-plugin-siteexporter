@@ -20,3 +20,5 @@ publish: false
 	* A subtype (//childType//) must be defined for descendants so that the index can be displayed in them
 	* //news.archive// type may not be required any more
 
+TODO: @maybe
+[ ] define the order of fall-back transaltions when a translation for the current language does not exist

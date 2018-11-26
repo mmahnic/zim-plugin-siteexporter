@@ -1,0 +1,10 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2018-11-26T20:00:50+01:00
+
+====== Translations of Template Variables ======
+---
+menu: "Translations"
+---
+
+Translations of template variables are stored in ''lang-xx'' pages under config and layout pages. Translantion pages are merged to generate the translation dictionary for a language: first the translation pages on the path to the active configuration are merged top to bottom, then the translation pages on the path to the active layout are merged.

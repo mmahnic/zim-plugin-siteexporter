@@ -5,13 +5,6 @@ Creation-Date: 2018-11-20T20:21:34+01:00
 ====== 00 ======
 ---
 publish: false
-menu: "00"
-weight: "99"
 ---
 
-==== Site Exporter Attributes ====
-* //publish//: see [[00:00.config|00.config.]]
-* //menu//: the string that will be displayed in the page index.
-* //weight//: defines the order of the items in the index. The items are sorted by //weight// in ascending order.
-* //type//: the type of the page. Custom processors, templates and css files can be associated with a page //type//.
-
+Children of this page define various configurations and layouts for exporting the site.
