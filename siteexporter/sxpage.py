@@ -20,6 +20,10 @@ import dateutil.parser as dateparser
 
 from pageattributes import loadYamlAttributes
 
+import logging
+lwarn = logging.warning
+lerror = logging.error
+
 mkdExtension = "markdown"
 htmlExtension = "html"
 exportPath = "/tmp/site" # TODO: depends on the system, may be configured by the user, may include notebook name
@@ -176,7 +180,7 @@ class MarkdownPage:
 
 
     def isPublished( self, dateTime=None  ):
-        if not self.published or self.isDraft:
+        if not self.zimPage.exists() or not self.published or self.isDraft:
             return False
 
         if dateTime is None:
@@ -209,12 +213,14 @@ class MarkdownPage:
             return datetime.date.fromordinal(self.createDate)
 
         def makeDate( dt ):
+            if dt is None:
+                return datetime.date.fromordinal( 1 )
             return datetime.date.fromordinal( dt.toordinal() )
 
-        if "Creation-Date" in self.zimPage._meta:
+        if self.zimPage._meta is not None and "Creation-Date" in self.zimPage._meta:
             return makeDate(dateparser.parse(self.zimPage._meta["Creation-Date"]))
 
-        return makdDate(self.zimPage.ctime())
+        return makeDate(self.zimPage.ctime)
 
 
     def getPublishDate( self ):
