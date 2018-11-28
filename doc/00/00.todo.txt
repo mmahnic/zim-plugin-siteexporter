@@ -14,11 +14,16 @@ publish: false
 [*] Templates should be able to use translated texts
 [ ] Add 'index' type that generates a list of children of a page. Similar to 'news' but finds children only.
 [ ] Support multiple translated variables in a single line
+[ ] Multiple links to markdown pages must be converted to links to html in a single line when preprocessing markdown
 [ ] The format of the date for active news items should be configurable
-[ ] The links in the excerpts are broken; when preparing excerpts, make (markdown) links absolute and mark them for processing later if necessary.
+[ ] @wip The links in the excerpts are broken; when preparing excerpts, make (markdown) links absolute and mark them for processing later if necessary.
 [ ] Create an index of //news.index// pages that will be displayed besides the news in every news page
 	* A subtype (//childType//) must be defined for descendants so that the index can be displayed in them
 	* //news.archive// type may not be required any more
+[ ] Define parameters to create Pandoc outputs other than HTML
+	* destination format
+	* template filename extension
+	* extensions of other files that depend on the page type and are used by the templates
 
 TODO: @maybe
 [ ] define the order of fall-back transaltions when a translation for the current language does not exist

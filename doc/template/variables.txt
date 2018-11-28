@@ -7,7 +7,7 @@ Creation-Date: 2018-11-25T11:38:44+01:00
 menu: Variables
 ---
 
-When the exporter processes a page it generates a dictionary with variables that can be used in Pandoc templates. These dictionary is stored in the YAML entry ''sx''.
+When the exporter processes a page it generates a dictionary with variables that can be used in Pandoc templates. The dictionary is written into the YAML entry ''sx'' of the markdown page.
 
 * //sx.navindex// - The index generated from published pages with the //menu// attribute. The variable is a list of records with the following members:
 	* //id// - The Zim id of the page.

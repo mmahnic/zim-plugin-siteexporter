@@ -6,7 +6,7 @@ Creation-Date: 2018-11-17T12:19:43+01:00
 ---
 layout: "00:layout:w3css"
 # layout: "00:layout:simple"
-pubdir: "../public-example"
+pubdir: "../xdata/public-example"
 titlePrefix: "Zim Help: "
 titleSuffix: " | Site Exporter"
 ---

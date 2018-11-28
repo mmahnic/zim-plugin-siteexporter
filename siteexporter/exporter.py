@@ -229,6 +229,7 @@ class SiteExporter:
     def fixExportedLinks( self, mkdLines ):
         rxlink = re.compile( r"(\]\([^)]+)\." + sxpage.mkdExtension + "\)" )
         for i,line in enumerate(mkdLines):
+            # TODO: Fix multiple links in single line
             mo = rxlink.search( line )
             if mo != None:
                 b, e = mo.end(1), mo.end(0)
