@@ -56,20 +56,14 @@ class TemplateProcessor:
     # Rewrite [@ tr var default @] --> $sx.tr.var$ and register the variables in translatedVars.
     def prepareTranslatedVariables( self, lines ):
         rxtranslate = re.compile( r"\[@\s*tr\s+([-_a-zA-Z0-9]+)(\s+[^@\]]+)\s*@\]" )
-        res = []
 
-        for line in lines:
-            # TODO: replace all matches
-            mo = rxtranslate.search( line )
-            if mo is None:
-                res.append( line )
-            else:
-                var = mo.group(1)
-                default = mo.group(2).strip()
-                self.addTranslatedVariable( var, default )
-                res.append( "{}$sx.tr.{}${}".format( line[:mo.start()], var, line[mo.end():] ) )
+        def markTranslation( mo ):
+            var = mo.group(1)
+            default = mo.group(2).strip()
+            self.addTranslatedVariable( var, default )
+            return  "$sx.tr.{}$".format( var )
 
-        return res
+        return [ rxtranslate.sub( markTranslation, line ) for line in lines ]
 
 
     def addTranslatedVariable( self, var, default ):
