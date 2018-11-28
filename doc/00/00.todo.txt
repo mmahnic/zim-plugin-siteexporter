@@ -14,7 +14,7 @@ publish: false
 [*] Templates should be able to use translated texts
 [ ] Add 'index' type that generates a list of children of a page. Similar to 'news' but finds children only.
 [ ] Support multiple translated variables in a single line
-[ ] Multiple links to markdown pages must be converted to links to html in a single line when preprocessing markdown
+[*] Multiple links to markdown pages must be converted to links to html in a single line when preprocessing markdown
 [ ] The format of the date for active news items should be configurable
 [*] The links in the excerpts are broken; when preparing excerpts, ~~make (markdown) links absolute and mark them for processing later if necessary~~. The links can be made relative to the index page.
 [ ] Create an index of //news.index// pages that will be displayed besides the news in every news page

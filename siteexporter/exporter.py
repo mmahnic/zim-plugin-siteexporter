@@ -227,15 +227,15 @@ class SiteExporter:
 
 
     def fixExportedLinks( self, mkdLines ):
-        rxlink = re.compile( r"(\]\([^)]+)\." + sxpage.mkdExtension + "\)" )
-        for i,line in enumerate(mkdLines):
-            # TODO: Fix multiple links in single line
-            mo = rxlink.search( line )
-            if mo != None:
-                b, e = mo.end(1), mo.end(0)
-                mkdLines[i] = line[:b] + "." + sxpage.htmlExtension + ")" + line[e:]
+        rxsName = r"[^]]*"
+        rxsPrefix = r"[^)]+"
+        rxsLink = r'\[({0})\]\(\s*({1})\.{2}\s*\)'.format(rxsName, rxsPrefix, sxpage.mkdExtension)
+        rxMkdLink = re.compile( rxsLink )
 
-        return mkdLines
+        def replaceExtension( mo ):
+            return "[{0}]({1}.{2})".format( mo.group(1), mo.group(2), sxpage.htmlExtension )
+
+        return [ rxMkdLink.sub( replaceExtension, line ) for line in mkdLines ]
 
 
     def createPageIndex( self, mkdFiles ):
