@@ -16,7 +16,7 @@ publish: false
 [ ] Support multiple translated variables in a single line
 [ ] Multiple links to markdown pages must be converted to links to html in a single line when preprocessing markdown
 [ ] The format of the date for active news items should be configurable
-[ ] @wip The links in the excerpts are broken; when preparing excerpts, make (markdown) links absolute and mark them for processing later if necessary.
+[*] The links in the excerpts are broken; when preparing excerpts, ~~make (markdown) links absolute and mark them for processing later if necessary~~. The links can be made relative to the index page.
 [ ] Create an index of //news.index// pages that will be displayed besides the news in every news page
 	* A subtype (//childType//) must be defined for descendants so that the index can be displayed in them
 	* //news.archive// type may not be required any more

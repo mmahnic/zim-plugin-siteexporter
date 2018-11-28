@@ -14,7 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-import os
+import os, re
 import datetime
 
 from processorfactory import Processor, ProcessorRegistry
@@ -22,7 +22,9 @@ from processorfactory import Processor, ProcessorRegistry
 ARCHIVETYPE = "news.archive"
 INDEXTYPE = "news.index"
 
-def getBriefDescription( page ):
+# @p page - the page for which we are generating the excerpt
+# @p indexPage - the page where the excerpt page will be shown
+def getPageExcerpt( page, indexPage ):
     mkdLines = page.getMarkdown()
 
     brief = []
@@ -44,13 +46,30 @@ def getBriefDescription( page ):
                 break
             brief.append( line )
 
-    if moreFound:
-        return "".join(brief).strip()
+    if not moreFound:
+        lens = [len(l.strip()) for l in brief]
+        cumlens = [sum(lens[:i]) for i in range(len(lens))]
+        goodLens = [l for l in cumlens if l < 300]
+        brief =  brief[:len(goodLens)]
 
-    lens = [len(l.strip()) for l in brief]
-    cumlens = [sum(lens[:i]) for i in range(len(lens))]
-    goodLens = [l for l in cumlens if l < 300]
-    return "".join( brief[:len(goodLens)] ).strip()
+    return "".join(fixExcerptLinks(brief, page, indexPage)).strip()
+
+
+def fixExcerptLinks( excerpt, page, indexPage ):
+    rxsName = r"[^]]*"
+    rxsLocal = r"\.[^)]+"
+    rxLink = re.compile( r'\[({0})\]\(\s*({1})\s*\)'.format(rxsName, rxsLocal) )
+    pageDir = os.path.dirname( page.htmlFilename )
+    indexDir = os.path.dirname( indexPage.htmlFilename )
+
+    def makeAbsoluteLink( mo ):
+        name = mo.group(1)
+        link = mo.group(2)
+        absLink = os.path.normpath( os.path.join( pageDir, link ) )
+        indexLink = os.path.relpath( absLink, indexDir )
+        return "[{0}]({1})".format( name, indexLink )
+
+    return [ rxLink.sub( makeAbsoluteLink, l ) for l in excerpt ]
 
 
 class PageInfoFinder:
@@ -92,19 +111,19 @@ class NewsPageProcessor( Processor ):
             return os.path.relpath( path, curDir )
 
         childAttrs = []
-        for p in childs:
-            if p.isExpired():
+        for child in childs:
+            if child.isExpired():
                 continue
-            if pageInfo.isIndexPage( p ) or pageInfo.isInArchive( p ):
+            if pageInfo.isIndexPage( child ) or pageInfo.isInArchive( child ):
                 continue
 
-            pubDate = p.getPublishDate()
+            pubDate = child.getPublishDate()
 
             descr = {
-                    "id": p.id,
-                    "title": p.title,
-                    "link": makeRelative(p.htmlFilename),
-                    "brief": getBriefDescription( p )
+                    "id": child.id,
+                    "title": child.title,
+                    "link": makeRelative(child.htmlFilename),
+                    "brief": getPageExcerpt( child, page )
                     }
             # TODO: The date should be translatable. Use a strptime format.
             if pubDate is not None:
@@ -130,14 +149,14 @@ class NewsIndexPageProcessor( Processor ):
             return os.path.relpath( path, curDir )
 
         childAttrs = []
-        for p in childs:
-            pubDate = p.getPublishDate()
+        for child in childs:
+            pubDate = child.getPublishDate()
 
             descr = {
-                    "id": p.id,
-                    "title": p.title,
-                    "link": makeRelative(p.htmlFilename),
-                    "brief": getBriefDescription( p )
+                    "id": child.id,
+                    "title": child.title,
+                    "link": makeRelative(child.htmlFilename),
+                    "brief": getPageExcerpt( child, page )
                     }
             # TODO: The date should be translatable. Use a strptime format.
             if pubDate is not None:
