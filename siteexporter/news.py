@@ -95,12 +95,11 @@ class PageInfoFinder:
                 return p
 
 
-
+# Create a list of published and not expired descendants.
 class NewsPageProcessor( Processor ):
     def digest( self, page, pages, newPages ):
         pageInfo = PageInfoFinder( pages )
-        childs = [ p for p in pages
-            if p.isPublished() and p.isDescendantOf( page ) ]
+        childs = [ p for p in page.getDescendants() if p.isPublished() ]
         if len(childs) == 0:
             return
 
@@ -134,11 +133,16 @@ class NewsPageProcessor( Processor ):
         page.addExtraAttrs( { "news-activeitems": childAttrs } )
 
 
+# Create a list of children items that are not themselves index pages.
+#
+# NOTE: Moving items between index pages will change their address and may
+# break links from other sites.  It would be better if index pages were
+# auto-generated from the publishDate.
 class NewsIndexPageProcessor( Processor ):
     def digest( self, page, pages, newPages ):
         pageInfo = PageInfoFinder( pages )
-        childs = [ p for p in pages
-            if not pageInfo.isIndexPage(p) and p.isPublished() and p.isChildOf( page ) ]
+        childs = [ p for p in page.children
+            if not pageInfo.isIndexPage(p) and p.isPublished() ]
         if len(childs) == 0:
             return
 
