@@ -83,7 +83,7 @@ class SiteExporter:
         self.mkdPages = [ sxpage.MarkdownPage( p, self.exportData ) for p in pages if p.exists() ]
         self.findPageParents( self.mkdPages )
 
-        # The iterator returns the page BEFORE it is exported :/
+        # The iterator returns the page BEFORE it is exported
 	for p in exporter.export_iter(pages):
             lwarn( "Exporting: {}: {}".format( type(p), p ) )
 

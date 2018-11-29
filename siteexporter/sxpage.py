@@ -90,6 +90,11 @@ class MarkdownPage:
     def getDescendants( self ):
         return sum([ [c] + c.getDescendants() for c in self.children ], [])
 
+    def getAncestors( self ):
+        if self.parent is None:
+            return []
+        return [self.parent] + self.parent.getAncestors()
+
     def getPageLanguage( self ):
         if self.lang is not None:
             return self.lang

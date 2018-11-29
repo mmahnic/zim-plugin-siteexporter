@@ -19,9 +19,6 @@ import datetime
 
 from processorfactory import Processor, ProcessorRegistry
 
-ARCHIVETYPE = "news.archive"
-INDEXTYPE = "news.index"
-
 # @p page - the page for which we are generating the excerpt
 # @p indexPage - the page where the excerpt page will be shown
 def getPageExcerpt( page, indexPage ):
@@ -73,32 +70,32 @@ def fixExcerptLinks( excerpt, page, indexPage ):
 
 
 class PageInfoFinder:
-    def __init__(self, pages):
+    def __init__(self, pages, exportData):
         self.pages = pages
+        self.exportData = exportData
+
+    def _processorTypeName( self, page ):
+        return self.exportData.pageTypeProcFactory.getProcessorName( page.getPageType() )
 
     def isInArchive( self, page ):
-        if page.getPageType() == ARCHIVETYPE:
+        if self._processorTypeName(page) == NewsArchivePageProcessor.__name__:
             return True
 
-        parents = [ self.findPage(id) for id in page.getParentIds() ]
-
-        return any( [ p.getPageType() == ARCHIVETYPE for p in parents if p is not None ] )
-
+        parents = page.getAncestors()
+        return any( [ self._processorTypeName(p) == NewsArchivePageProcessor.__name__
+            for p in parents if p is not None ] )
 
     def isIndexPage( self, page ):
-        return page.getPageType() == INDEXTYPE
+        return self._processorTypeName(page) == NewsIndexPageProcessor.__name__
 
-
-    def findPage( self, pageId ):
-        for p in self.pages:
-            if p.id == pageId:
-                return p
+    def isNewsRootPage( self, page ):
+        return self._processorTypeName(page) == NewsPageProcessor.__name__
 
 
 # Create a list of published and not expired descendants.
 class NewsPageProcessor( Processor ):
     def digest( self, page, pages, newPages ):
-        pageInfo = PageInfoFinder( pages )
+        pageInfo = PageInfoFinder( pages, page.exportData )
         childs = [ p for p in page.getDescendants() if p.isPublished() ]
         if len(childs) == 0:
             return
@@ -140,7 +137,7 @@ class NewsPageProcessor( Processor ):
 # auto-generated from the publishDate.
 class NewsIndexPageProcessor( Processor ):
     def digest( self, page, pages, newPages ):
-        pageInfo = PageInfoFinder( pages )
+        pageInfo = PageInfoFinder( pages, page.exportData )
         childs = [ p for p in page.children
             if not pageInfo.isIndexPage(p) and p.isPublished() ]
         if len(childs) == 0:
@@ -171,10 +168,17 @@ class NewsIndexPageProcessor( Processor ):
         page.addExtraAttrs( { "news-indexitems": childAttrs } )
 
 
+# NOTE: This processor may not be necessary
+class NewsArchivePageProcessor:
+    pass
+
+
 class Register(ProcessorRegistry):
     def registerPageTypes(self, pageTypeProcFactory):
         pageTypeProcFactory.registerPageType( "news", NewsPageProcessor.__name__ )
         pageTypeProcFactory.registerPageType( "news.index", NewsIndexPageProcessor.__name__ )
+        pageTypeProcFactory.registerPageType( "news.archive", NewsArchivePageProcessor.__name__ )
         pageTypeProcFactory.registerPageType( "blog", NewsPageProcessor.__name__ )
         pageTypeProcFactory.registerPageType( "blog.index", NewsIndexPageProcessor.__name__ )
+        pageTypeProcFactory.registerPageType( "blog.archive", NewsArchivePageProcessor.__name__ )
 

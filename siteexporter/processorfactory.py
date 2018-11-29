@@ -50,6 +50,14 @@ class PageTypeProcessorFactory:
 
         return None
 
+
+    def getProcessorName( self, pageType ):
+        if pageType in self.pageProcessor:
+            return self.pageProcessor[ pageType ]
+
+        return None
+
+
     # Registering processors by class name will allow us to define new types of pages in the
     # configuration pages or use different processors for known page types.
     def registerPageType( self, pageType, processorKlassName ):
