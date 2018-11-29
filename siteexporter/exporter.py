@@ -158,6 +158,7 @@ class SiteExporter:
             for pf in mkdFiles:
                 if pf.zimPage == f.zimPage.parent:
                     f.parent = pf
+                    pf.children.append( f )
                     break
 
     def getPageLanguage( self, page ):

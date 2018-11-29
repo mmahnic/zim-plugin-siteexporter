@@ -38,6 +38,7 @@ class MarkdownPage:
         self.htmlFilename = "{}.{}".format("/".join(self.path), htmlExtension)
         self.attrs = {}
         self.parent = None
+        self.children = []
 
         self.id = ":".join(self.path)
         self.level = len(self.path)
@@ -85,6 +86,9 @@ class MarkdownPage:
         if len(self.path) < 2:
             return []
         return [ self.parentId(i) for i in range(1, len(self.path)) ]
+
+    def getDescendants( self ):
+        return sum([ [c] + c.getDescendants() for c in self.children ], [])
 
     def getPageLanguage( self ):
         if self.lang is not None:
