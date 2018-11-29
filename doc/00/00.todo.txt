@@ -19,11 +19,13 @@ publish: false
 [*] The links in the excerpts are broken; when preparing excerpts, ~~make (markdown) links absolute and mark them for processing later if necessary~~. The links can be made relative to the index page.
 [ ] Create an index of //news.index// pages that will be displayed besides the news in every news page
 	* A subtype (//childType//) must be defined for descendants so that the index can be displayed in them
+	* An ancestor must have a page type whose processor is NewsPageProcessor
 	* //news.archive// type may not be required any more
 [ ] Define parameters to create Pandoc outputs other than HTML
 	* destination format
 	* template filename extension
 	* extensions of other files that depend on the page type and are used by the templates
+[*] @bug Only one notebook can be exported if multiple notebooks are open
 
 TODO: @maybe
 [ ] define the order of fall-back transaltions when a translation for the current language does not exist

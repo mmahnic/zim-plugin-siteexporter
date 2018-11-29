@@ -21,10 +21,9 @@ from pageattributes import loadYamlAttributes
 # this page. The "active" property of the base config page defines the actual
 # config page to use.
 configPageId = "00:00.config"
-rootConfigPage = None
 
 class Configuration:
-    def __init__(self, zimPage, notebook):
+    def __init__(self, zimPage, notebook, rootConfigPage):
         self.notebook = notebook
         self.zimPage = zimPage
         self.attrs = loadYamlAttributes( zimPage )
@@ -32,7 +31,7 @@ class Configuration:
         if self != rootConfigPage and zimPage.parent is not None:
             parent = notebook.get_page( zimPage.parent )
             if parent is not None:
-                self.parent = Configuration( parent, notebook )
+                self.parent = Configuration( parent, notebook, rootConfigPage )
 
     @property
     def name( self ):
@@ -53,9 +52,8 @@ class Configuration:
 
 
 def getActiveConfiguration( notebook ):
-    global rootConfigPage, configPageId
-    if rootConfigPage is None:
-        rootConfigPage = notebook.get_page( Path(configPageId) )
+    global configPageId
+    rootConfigPage = notebook.get_page( Path(configPageId) )
 
     if rootConfigPage is None or not rootConfigPage.exists():
         raise Exception( "Root Config Page '{}' not found.".format( configPageId ) )
@@ -67,6 +65,6 @@ def getActiveConfiguration( notebook ):
         if activeConfigPage is None or not activeConfigPage.exists():
             raise Exception( "Active Config Page '{}' not found.".format( activeId ) )
 
-        return Configuration( activeConfigPage, notebook )
+        return Configuration( activeConfigPage, notebook, rootConfigPage )
 
-    return Configuration( rootConfigPage, notebook )
+    return Configuration( rootConfigPage, notebook, rootConfigPage )
