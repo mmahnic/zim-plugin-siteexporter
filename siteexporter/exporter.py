@@ -177,7 +177,7 @@ class SiteExporter:
             return fn
 
         # Layout file for a specific page type
-        pageType = page.pageType
+        pageType = page.getPageType()
         fn = os.path.join( base, "@{}@.{}".format( pageType, ext ) )
         if os.path.exists( fn ):
             return fn
@@ -207,7 +207,7 @@ class SiteExporter:
 
 
     def getPageProcessor( self, page ):
-        return self.exportData.pageTypeProcFactory.getProcessor( page.pageType )
+        return self.exportData.pageTypeProcFactory.getProcessor( page.getPageType() )
 
 
     def processExportedPage( self, page ):

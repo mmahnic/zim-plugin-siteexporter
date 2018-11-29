@@ -7,7 +7,7 @@ Creation-Date: 2018-11-20T20:49:55+01:00
 menu: Page Type
 ---
 
-The page type is specified in the page attribute //type//.
+The page type is specified in the page attribute //type//. If this attribute is not set on a page, the exporter will use the value of the attribute //childType// from parent pages. If //childType// is not found in parent pages, the page will have the default page type.
 
 ==== Page Type Processor ====
 If a page type is specified in page attributes and a processor for that type is registered, the page will be processed by that processor. A processor typically generates new attributes and adds them to the page's extra attributes. The extra attributes are later used by the final converter (Pandoc).

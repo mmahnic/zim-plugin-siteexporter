@@ -9,7 +9,7 @@ publish: false
 
 [*] The exporter will use the default template (default.html5) and css (default.css) to generate the site unless there exists a special template for the page or its parent. If the path to the page is "root:subpage:subsub" the template is named "root.subpage.subsub.html5". 
 [*] Each page type can have a separate template
-[ ] Define a ~~template~~ page type for subtrees
+[*] Define a ~~template~~ page type for subtrees
 	* ~~childTemplate~~ //childType// - the default ~~template~~ page type for all the descendants
 [*] Templates should be able to use translated texts
 [ ] Add 'index' type that generates a list of children of a page. Similar to 'news' but finds children only.

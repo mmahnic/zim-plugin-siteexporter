@@ -77,16 +77,16 @@ class PageInfoFinder:
         self.pages = pages
 
     def isInArchive( self, page ):
-        if page.pageType == ARCHIVETYPE:
+        if page.getPageType() == ARCHIVETYPE:
             return True
 
         parents = [ self.findPage(id) for id in page.getParentIds() ]
 
-        return any( [ p.pageType == ARCHIVETYPE for p in parents if p is not None ] )
+        return any( [ p.getPageType() == ARCHIVETYPE for p in parents if p is not None ] )
 
 
     def isIndexPage( self, page ):
-        return page.pageType == INDEXTYPE
+        return page.getPageType() == INDEXTYPE
 
 
     def findPage( self, pageId ):

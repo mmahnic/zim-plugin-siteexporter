@@ -46,7 +46,8 @@ class MarkdownPage:
         self.lang = None
         self.metaTitle = self.title
         self.menuText = None
-        self.pageType = "page"
+        self._pageType = None
+        self._childType = None
         self.isDraft = False
         self.published = True
         self.createDate = None
@@ -117,7 +118,10 @@ class MarkdownPage:
 
         # The type of the processor for the page. Default is "page"
         if "type" in attrs:
-            self.pageType = attrs["type"]
+            self._pageType = attrs["type"]
+
+        if "childType" in attrs:
+            self._childType = attrs["childType"]
 
         # Published: published, not isDraft
         if "publish" in attrs:
@@ -178,6 +182,19 @@ class MarkdownPage:
             if v is not None and not k in self.extraAttrs:
                 self.extraAttrs[k] = v
 
+    def getPageType( self ):
+        if self._pageType is None:
+            p = self.parent
+            while p is not None:
+                if p._childType is not None:
+                    self._pageType = p._childType
+                    break
+                p = p.parent
+
+            if self._pageType is None:
+                self._pageType = "page"
+
+        return self._pageType
 
     def isPublished( self, dateTime=None  ):
         if not self.zimPage.exists() or not self.published or self.isDraft:
