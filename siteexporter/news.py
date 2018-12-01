@@ -70,12 +70,11 @@ def fixExcerptLinks( excerpt, page, indexPage ):
 
 
 class PageInfoFinder:
-    def __init__(self, pages, exportData):
-        self.pages = pages
-        self.exportData = exportData
+    def __init__(self, pageProcessorFactory):
+        self.pageProcessorFactory = pageProcessorFactory
 
     def _processorTypeName( self, page ):
-        return self.exportData.pageTypeProcFactory.getProcessorName( page.getPageType() )
+        return self.pageProcessorFactory.getProcessorName( page.getPageType() )
 
     def isInArchive( self, page ):
         if self._processorTypeName(page) == NewsArchivePageProcessor.__name__:
@@ -91,11 +90,51 @@ class PageInfoFinder:
     def isNewsRootPage( self, page ):
         return self._processorTypeName(page) == NewsPageProcessor.__name__
 
+class NewsIndexBuilder:
+    """
+    Build the index of index pages under a root news page.
+
+    The index is composed of all "news.index" and "news" pages under the
+    news-root page.  If another descendant of type "news" is found, its children
+    are not added to this index.
+    """
+
+    class IndexEntry:
+        def __init__( self, page ):
+            self.page = page
+            self.parent = None
+            self.children = []
+
+    def __init__(self, newsRootPage, pageInfoFinder):
+        self.root = newsRootPage
+        self.pageInfo = pageInfoFinder
+        self.index = None
+
+    def getIndexForPage( page ):
+        if self.index is None:
+            self.index = self._buildIndex()
+        return None
+
+    def _buildIndex( self ):
+        def makeEntries( page, parentEntry ):
+            for child in page.children:
+                entry = None
+                if self.pageInfo.isIndexPage( child ) or self.pageInfo.isNewsRootPage( child ):
+                    entry = NewsIndexBuilder.IndexEntry( child )
+                    entry.parent = parentEntry
+                    parentEntry.children.append( entry )
+                if not self.pageInfo.isNewsRootPage( child ):
+                    makeEntries( child, parentEntry if entry is None else entry )
+
+        rootEntry = NewsIndexBuilder.IndexEntry( self.root )
+        makeEntries( self.root, rootEntry )
+        return rootEntry
+
 
 # Create a list of published and not expired descendants.
 class NewsPageProcessor( Processor ):
     def digest( self, page, pages, newPages ):
-        pageInfo = PageInfoFinder( pages, page.exportData )
+        pageInfo = PageInfoFinder( page.exportData.pageTypeProcFactory )
         childs = [ p for p in page.getDescendants() if p.isPublished() ]
         if len(childs) == 0:
             return
@@ -137,7 +176,7 @@ class NewsPageProcessor( Processor ):
 # auto-generated from the publishDate.
 class NewsIndexPageProcessor( Processor ):
     def digest( self, page, pages, newPages ):
-        pageInfo = PageInfoFinder( pages, page.exportData )
+        pageInfo = PageInfoFinder( page.exportData.pageTypeProcFactory )
         childs = [ p for p in page.children
             if not pageInfo.isIndexPage(p) and p.isPublished() ]
         if len(childs) == 0:
