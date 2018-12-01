@@ -266,3 +266,13 @@ class MarkdownPage:
         return None
 
 
+# copy the parent realtions from Page to MarkdownPage
+def findPageParents( mkdFiles ):
+    for f in mkdFiles:
+        if f.zimPage.parent is None or f.zimPage.parent == f.zimPage:
+            continue
+        for pf in mkdFiles:
+            if pf.zimPage == f.zimPage.parent:
+                f.parent = pf
+                pf.children.append( f )
+                break

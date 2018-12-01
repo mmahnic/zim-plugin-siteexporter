@@ -81,7 +81,7 @@ class SiteExporter:
         pages = AllPages(self.exportData.notebook)
 
         self.mkdPages = [ sxpage.MarkdownPage( p, self.exportData ) for p in pages if p.exists() ]
-        self.findPageParents( self.mkdPages )
+        sxpage.findPageParents( self.mkdPages )
 
         # The iterator returns the page BEFORE it is exported
 	for p in exporter.export_iter(pages):
@@ -149,17 +149,6 @@ class SiteExporter:
             if config is not None and config.hasValue( "home" ):
                 self.homepage = self.getPage( config.getValue( "home" ) )
         return self.homepage
-
-    # copy the parent realtions from Page to MarkdownPage
-    def findPageParents( self, mkdFiles ):
-        for f in mkdFiles:
-            if f.zimPage.parent is None or f.zimPage.parent == f.zimPage:
-                continue
-            for pf in mkdFiles:
-                if pf.zimPage == f.zimPage.parent:
-                    f.parent = pf
-                    pf.children.append( f )
-                    break
 
     def getPageLanguage( self, page ):
         lang = page.getPageLanguage()
