@@ -8,6 +8,8 @@ publish: false
 ---
 
 [*] The exporter will use the default template (default.html5) and css (default.css) to generate the site unless there exists a special template for the page or its parent. If the path to the page is "root:subpage:subsub" the template is named "root.subpage.subsub.html5". 
+	[*] If a page is moved its template has to be renamed; use template attribute, instead
+		* order: template, type, default
 [*] Each page type can have a separate template
 [*] Define a ~~template~~ page type for subtrees
 	* ~~childTemplate~~ //childType// - the default ~~template~~ page type for all the descendants
@@ -26,6 +28,8 @@ publish: false
 	* template filename extension
 	* extensions of other files that depend on the page type and are used by the templates
 [*] @bug Only one notebook can be exported if multiple notebooks are open
+[x] Adjust links to template resources in templates [@href banner-image banner.jpeg @] -> templateProcessor.hrefVars
+	* css url can be used, instead
 
 TODO: @maybe
 [ ] define the order of fall-back transaltions when a translation for the current language does not exist

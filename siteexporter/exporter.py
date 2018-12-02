@@ -161,10 +161,10 @@ class SiteExporter:
         base = self.layoutPath()
 
         # Layout file for a specific page
-        name = ".".join( page.path ) + "." + ext
-        fn = os.path.join( base, name )
-        if os.path.exists( fn ):
-            return fn
+        if page.templateBasename is not None:
+            fn = os.path.join( base, "{}.{}".format( page.templateBasename, ext ) )
+            if os.path.exists( fn ):
+                return fn
 
         # Layout file for a specific page type
         pageType = page.getPageType()

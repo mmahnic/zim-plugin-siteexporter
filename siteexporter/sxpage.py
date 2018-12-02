@@ -56,6 +56,7 @@ class MarkdownPage:
         self.publishDate = None
         self.unpublishDate = None
         self.template = None
+        self.templateBasename = None # template attribute
         self.style = None
         self.extraAttrs = {}
 
@@ -128,6 +129,9 @@ class MarkdownPage:
         # The type of the processor for the page. Default is "page"
         if "type" in attrs:
             self._pageType = attrs["type"]
+
+        if "template" in attrs:
+            self.templateBasename = attrs["template"]
 
         if "childType" in attrs:
             self._childType = attrs["childType"]
