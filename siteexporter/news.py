@@ -132,7 +132,10 @@ class NewsIndexBuilder:
 
     def _buildIndex( self ):
         def makeEntries( page, parentEntry ):
-            for child in page.children:
+            childs = [ p for p in page.children ]
+            childs.sort( key=lambda p: p.getCreationDate(), reverse=True )
+
+            for child in childs:
                 entry = None
                 if self.pageInfo.isIndexPage( child ) or self.pageInfo.isNewsRootPage( child ):
                     entry = NewsIndexBuilder.IndexEntry( child )
@@ -201,7 +204,7 @@ class NewsPageProcessor( Processor ):
 class NewsIndexPageProcessor( Processor ):
     def digest( self, page, pages, newPages ):
         pageInfo = PageInfoFinder( page.exportData.pageTypeProcFactory )
-        childs = [ p for p in page.children
+        childs = [ p for p in page.getDescendants()
             if not pageInfo.isIndexPage(p) and p.isPublished() ]
         if len(childs) == 0:
             return
