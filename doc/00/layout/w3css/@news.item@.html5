@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"$if(lang)$lang="$lang$" xml:lang="$lang$"$endif$$if(dir)$ dir="$dir$"$endif$>
+[@include htmlhead.htmli@]
+<body>
+<div class="w3-black banner">&nbsp;</div>
+$for(include-before)$
+$include-before$
+$endfor$
+
+[@include navigationbar.htmli@]
+
+<div id="main-wrapper" class="w3-container">
+$if(sx.title)$
+<header id="title-block-header">
+<h1 class="title">$sx.title$</h1>
+$if(sx.subtitle)$
+<p class="subtitle">$sx.subtitle$</p>
+$endif$
+$for(sx.author)$
+<p class="author">$sx.author$</p>
+$endfor$
+$if(sx.date)$
+<p class="date">$sx.date$</p>
+$endif$
+</header>
+$endif$
+$if(toc)$
+<nav id="$idprefix$TOC">
+$table-of-contents$
+</nav>
+$endif$
+<main>
+$body$
+</main>
+</div>
+[@include newsarchiveindex.htmli@]
+
+$for(include-after)$
+$include-after$
+$endfor$
+</body>
+</html>
+
