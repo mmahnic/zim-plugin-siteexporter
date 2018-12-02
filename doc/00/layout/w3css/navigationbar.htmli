@@ -1,4 +1,4 @@
-<div class="w3-top">
+<div id="top-navindex" class="w3-top">
 <div class="w3-bar w3-black">
 <nav>
 $if(sx.navindex)$
@@ -34,7 +34,7 @@ $endif$
 </div>
 </div>
 
-<div id="demo" class="w3-bar-block w3-black w3-hide w3-hide-large w3-hide-medium">
+<div id="inline-navindex" class="w3-bar-block w3-black w3-hide w3-hide-large w3-hide-medium">
 $if(sx.navindex)$
 $for(sx.navindex)$
    <a href="$sx.navindex.link$" class="w3-bar-item w3-button">$sx.navindex.display$</a>
@@ -51,11 +51,17 @@ $endif$
 $endfor$
 <script>
 function displayBurgerMenu() {
-    var x = document.getElementById("demo");
-    if (x.className.indexOf("w3-show") == -1) {
-        x.className += " w3-show";
+    var nav = document.getElementById("inline-navindex");
+    if ( nav == null )
+       return;
+    if (nav.className.indexOf("w3-show") < 0) {
+        nav.className += " w3-show";
+        nav.scrollIntoView();
+        var bar = document.getElementById("top-navindex");
+        if ( bar != null )
+           window.scrollBy( 0, -bar.clientHeight );
     } else { 
-        x.className = x.className.replace(" w3-show", "");
+        nav.className = nav.className.replace(" w3-show", "");
     }
 }
 </script>

@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"$if(lang)$lang="$lang$" xml:lang="$lang$"$endif$$if(dir)$ dir="$dir$"$endif$>
 [@include htmlhead.htmli@]
-<body class="w3-content w3-left">
-<div class="w3-panel w3-white">&nbsp;</div>
+<body>
+<div class="w3-white banner">&nbsp;</div>
 $for(include-before)$
 $include-before$
 $endfor$

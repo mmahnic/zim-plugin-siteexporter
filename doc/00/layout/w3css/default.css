@@ -31,3 +31,13 @@ a.header-wrap { text-decoration: none; }
 
 img.float-left { float: left; margin-right: 1em; margin-bottom: 1em; }
 img.float-right { float: right; margin-left: 1em; margin-bottom: 1em; }
+
+.banner { 
+   background-image: url("zim-banner.jpg"); 
+   height: 180px;
+   width: 100%;
+   background-position: left bottom;
+   background-repeat: no-repeat;
+   background-size: cover default;
+}
+
