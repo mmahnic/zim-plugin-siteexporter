@@ -110,10 +110,25 @@ class NewsIndexBuilder:
         self.pageInfo = pageInfoFinder
         self.index = None
 
-    def getIndexForPage( page ):
+    def getIndexDictForPage( self, page ):
+        if page != self.root and not page.isDescendantOf( self.root ):
+            return None
+
         if self.index is None:
             self.index = self._buildIndex()
-        return None
+
+        curDir = os.path.dirname( page.htmlFilename )
+        def makeRelative( path ):
+            return os.path.relpath( path, curDir )
+
+        def makeIndex( entry ):
+            page = entry.page
+            el = { "id": page.id, "title": page.title, "link": makeRelative( page.htmlFilename )  }
+            if len(entry.children) > 0:
+                el["items"] = [ makeIndex( child ) for child in entry.children ]
+            return el
+
+        return makeIndex( self.index )
 
     def _buildIndex( self ):
         def makeEntries( page, parentEntry ):
@@ -167,6 +182,15 @@ class NewsPageProcessor( Processor ):
             childAttrs.append( descr )
 
         page.addExtraAttrs( { "news-activeitems": childAttrs } )
+        self._injectArchiveIndex( page, childs, newPages )
+
+
+    def _injectArchiveIndex( self, rootPage, childs, newPages ):
+        pageInfo = PageInfoFinder( rootPage.exportData.pageTypeProcFactory )
+        builder = NewsIndexBuilder(rootPage, pageInfo)
+        rootPage.addExtraAttrs( { "news-archiveindex": builder.getIndexDictForPage( rootPage ) } )
+        for page in childs:
+            page.addExtraAttrs( { "news-archiveindex": builder.getIndexDictForPage( page ) } )
 
 
 # Create a list of children items that are not themselves index pages.

@@ -160,6 +160,36 @@ class TestNewsIndexBuilder(unittest.TestCase):
         self.assertEqual( ch2_ch1.page.path[-1], "sub-announcements" )
         self.assertEqual( len(ch2_ch1.children), 0 )
 
+    def test_createNewsIndexDict(self):
+        # -- GIVEN
+        notebook = TestNotebook()
+        zimRoot = createNewsStructure( notebook )
+        mkdPages = [ MarkdownPage( p, None ) for p in notebook.pages if p.exists() ]
+        root = [ p for p in mkdPages if p.zimPage == zimRoot ][0]
+        findPageParents( mkdPages )
+
+        procFactory = PageTypeProcessorFactory()
+        ProcessorRegistry.registerPageTypes(procFactory)
+        infoFinder = news.PageInfoFinder(procFactory)
+        builder = news.NewsIndexBuilder(root, infoFinder)
+
+        # -- WHEN
+        index = builder.getIndexDictForPage( root )
+
+        # -- THEN
+        self.assertEqual( index["id"], "announcements" )
+        self.assertEqual( len(index["items"]), 3 )
+
+        ch0 = index["items"][0]
+        self.assertEqual( ch0["id"], "announcements:2017" )
+
+        ch1 = index["items"][1]
+        self.assertEqual( ch1["id"], "announcements:2018" )
+        self.assertEqual( len(ch1["items"]), 1)
+
+        ch2 = index["items"][2]
+        self.assertEqual( ch2["id"], "announcements:2019" )
+        self.assertEqual( len(ch2["items"]), 2)
 
 if __name__ == "__main__":
     unittest.main()
