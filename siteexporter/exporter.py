@@ -24,6 +24,7 @@ import zim.formats
 import yaml
 
 from templates import TemplateProcessor
+from resourcefinder import ResourceFinder
 import sxpage
 
 import logging
@@ -31,7 +32,7 @@ lwarn = logging.warning
 lerror = logging.error
 
 pandoccmd = "pandoc"
-exportPath = sxpage.exportPath
+exportPath = sxpage.exportPath # FIXME: no globals
 
 class IndexEntry:
     def __init__( self, page ):
@@ -53,6 +54,7 @@ class SiteExporter:
         self.layout = None
         self.homepage = None
         self.templateProc = TemplateProcessor()
+        self.resourceFinder = ResourceFinder( self.config )
 
 
     # from zim.export
@@ -106,29 +108,19 @@ class SiteExporter:
 
         templates = set([])
         for page in self.mkdPages:
-            templates.add(self.getPageTemplate(page))
+            templates.add(self.resourceFinder.getPageTemplate(page))
 
         for templateFn in templates:
             self.templateProc.processTemplate(templateFn)
 
         for page in self.mkdPages:
             if page.isPublished():
-                page.completeExtraAttrs( self.exportData, self.templateProc.translatedVars )
+                page.completeExtraAttrs( self.exportData, self.templateProc.translatedVars,
+                        self.templateProc.resourceVars )
                 self._writeExtraAttrs( page )
 
         self.makeHtml( self.mkdPages )
         self.copyFilesToPubDir()
-
-
-    def layoutPath(self):
-        if self.layout is None:
-            config = self.config
-            self.layout = config.getValue( "layout" )
-
-        if self.layout is None:
-            raise Exception( "Value 'layout' is defined on the config page '{}'.".format( config.name ) )
-
-        return os.path.join( exportPath, *self.layout.split(":") )
 
 
     def getConfig( self ):
@@ -149,51 +141,6 @@ class SiteExporter:
             if config is not None and config.hasValue( "home" ):
                 self.homepage = self.getPage( config.getValue( "home" ) )
         return self.homepage
-
-    def getPageLanguage( self, page ):
-        lang = page.getPageLanguage()
-        if lang is not None:
-            return lang
-        return self.config.getDefaultLanguage()
-
-    # Layout file: template, css, ...
-    def _discoverLayoutFile( self, page, ext ):
-        base = self.layoutPath()
-
-        # Layout file for a specific page
-        if page.templateBasename is not None:
-            fn = os.path.join( base, "{}.{}".format( page.templateBasename, ext ) )
-            if os.path.exists( fn ):
-                return fn
-
-        # Layout file for a specific page type
-        pageType = page.getPageType()
-        fn = os.path.join( base, "@{}@.{}".format( pageType, ext ) )
-        if os.path.exists( fn ):
-            return fn
-
-        # Default layout file
-        fn = os.path.join( base, "default.{}".format( ext ) )
-        if os.path.exists( fn ):
-            return fn
-
-        return None
-
-
-    def getPageTemplate( self, page ):
-        if page.template is None:
-            page.template = self._discoverLayoutFile( page, "html5" )
-            if page.template is None:
-                pate.template = "default.html5"
-        return page.template
-
-
-    def getPageStyleFile( self, page ):
-        if page.style is None:
-            page.style = self._discoverLayoutFile( page, "css" )
-            if page.style is None:
-                pate.style = "default.css"
-        return page.style
 
 
     def getPageProcessor( self, page ):
@@ -323,7 +270,7 @@ class SiteExporter:
 
 
     def addPageStyle( self, page ):
-        style = self.getPageStyleFile( page )
+        style = self.resourceFinder.getPageStyleFile( page )
         if style is None:
             return
 
@@ -343,7 +290,7 @@ class SiteExporter:
             if not page.isPublished():
                 continue
 
-            template = self.getPageTemplate( page )
+            template = self.resourceFinder.getPageTemplate( page )
             mkdpath = page.fullFilename()
             outpath = page.fullHtmlFilename()
             filenames = ["-o",  outpath, mkdpath ]

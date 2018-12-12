@@ -21,6 +21,9 @@ class TemplateProcessor:
         # Variables that need translations in Pandoc templates
         self.translatedVars = {}
 
+        # Variables that need need path resolution in Pandoc templates
+        self.resourceVars = {}
+
     def processTemplate( self, templateFilename ):
         if not os.path.exists( templateFilename ):
             return
@@ -29,9 +32,20 @@ class TemplateProcessor:
 
         lines = self.includeTemplateChunks( lines, os.path.dirname( templateFilename ) )
         lines = self.prepareTranslatedVariables( lines )
+        lines = self.prepareResourceVariables( lines )
 
         with open( templateFilename, "w" ) as f:
             f.write( "".join( lines ) )
+
+
+    def addTranslatedVariable( self, var, default ):
+        if not var in self.translatedVars:
+            self.translatedVars[var] = default
+
+
+    def addResourceVariable( self, var, default ):
+        if not var in self.resourceVars:
+            self.resourceVars[var] = default
 
 
     def includeTemplateChunks( self, lines, baseDir ):
@@ -66,6 +80,15 @@ class TemplateProcessor:
         return [ rxtranslate.sub( markTranslation, line ) for line in lines ]
 
 
-    def addTranslatedVariable( self, var, default ):
-        if not var in self.translatedVars:
-            self.translatedVars[var] = default
+    # Rewrite [@ res var default @] --> $sx.res.var$ and register the variables in resourceVars.
+    def prepareResourceVariables( self, lines ):
+        rxres = re.compile( r"\[@\s*res\s+([-_a-zA-Z0-9]+)(\s+[^@\]]+)?\s*@\]" )
+
+        def markResource( mo ):
+            var = mo.group(1)
+            default = mo.group(2).strip() if mo.group(2) is not None else None
+            self.addResourceVariable( var, default )
+            return  "$sx.res.{}$".format( var )
+
+        return [ rxres.sub( markResource, line ) for line in lines ]
+

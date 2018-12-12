@@ -23,3 +23,6 @@ When multiple templates are defined in a layout, some parts of the templates rep
 
 === Translations of template texts ===
 Templates can include static text that can be translated to different languages.  The preprocesor replaces the directive ''[@tr variable Default-Text @]'' with the pandoc placeholder ''$sx.tr.variable$'' and registeres a translation variable. The variable will hold the translated value for each page based on the page's language or the default text if a translation is not available for a language.
+
+=== Custom template resources ===
+Templates can include custom resurces defined for each page. The preprocesor replaces the directive ''[@res variable Default-Filename @]'' with the pandoc placeholder ''$sx.res.variable$'' and registeres a translation variable. If the resource is an attachment of the active layout page, the relative path from the page to the resource file will be stored in the variable. The resource can be changed for each page by setting the value of //variable// in YAML attributes. See the [[+resource-example|Resource Example]].

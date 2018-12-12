@@ -19,6 +19,7 @@ import datetime
 import dateutil.parser as dateparser
 
 from pageattributes import loadYamlAttributes
+from resourcefinder import ResourceFinder
 
 import logging
 lwarn = logging.warning
@@ -159,41 +160,71 @@ class MarkdownPage:
             self.extraAttrs[k] = v
 
     # Called just before the extra attributes will be written to the output
-    def completeExtraAttrs( self, exportData, translatedVars ):
+    def completeExtraAttrs( self, exportData, translatedVars, resourceVars ):
         # Add a title if it does not exist in the attributes
         if "title" not in self.extraAttrs:
             self.extraAttrs["title"] = self.title
 
-        # Use settings from the configuration to build the page meta title
-        if "meta-title" not in self.extraAttrs:
-            if self.metaTitle is not None:
-                meta = self.metaTitle
-            elif self.title is not None:
-                meta = self.title
-            else:
-                meta = ""
-
-            config = exportData.config
-            hasConfig = config is not None
-            meta_prefix = config.getValue( "titlePrefix", "" ) if hasConfig else ""
-            meta_suffix = config.getValue( "titleSuffix", "" ) if hasConfig else ""
-            self.extraAttrs["meta-title"] = "{}{}{}".format( meta_prefix, meta, meta_suffix )
-
-        if len(translatedVars) > 0:
-            trans = exportData.trans
-            lang = self.getPageLanguage()
-            if lang is None:
-                lang = trans.getDefaultLanguage()
-            tr = {}
-            for var,default in translatedVars.items():
-                tr[var] = trans.getTranslation( lang, var, default )
-            self.extraAttrs["tr"] = tr
-
+        self._completeMetatitle( exportData )
+        self._completeTranslations( exportData, translatedVars )
+        self._completeResources( resourceVars )
 
         # Copy original attributes to extra attributes if they are not defined in extra
         for k,v in self.attrs.items():
             if v is not None and not k in self.extraAttrs:
                 self.extraAttrs[k] = v
+
+    def _completeMetatitle( self, exportData ):
+        # Use settings from the configuration to build the page meta title
+        if "meta-title" in self.extraAttrs:
+            return
+
+        if self.metaTitle is not None:
+            meta = self.metaTitle
+        elif self.title is not None:
+            meta = self.title
+        else:
+            meta = ""
+
+        config = exportData.config
+        hasConfig = config is not None
+        meta_prefix = config.getValue( "titlePrefix", "" ) if hasConfig else ""
+        meta_suffix = config.getValue( "titleSuffix", "" ) if hasConfig else ""
+        self.extraAttrs["meta-title"] = "{}{}{}".format( meta_prefix, meta, meta_suffix )
+
+    def _completeTranslations( self, exportData, translatedVars ):
+        # Find translations for translated variables
+        if len(translatedVars) == 0:
+            return
+
+        trans = exportData.trans
+        lang = self.getPageLanguage()
+        if lang is None:
+            lang = trans.getDefaultLanguage()
+        tr = {}
+        for var,default in translatedVars.items():
+            tr[var] = trans.getTranslation( lang, var, default )
+        self.extraAttrs["tr"] = tr
+
+    def _completeResources( self, resourceVars ):
+        # Find resources for template variables and write their relative paths
+        if len(resourceVars) == 0:
+            return
+
+        curDir = os.path.dirname( self.fullHtmlFilename() )
+        def makeRelative( path ):
+            return os.path.relpath( path, curDir )
+
+        resFinder = ResourceFinder( self.exportData.config )
+        res = {}
+        for var,default in resourceVars.items():
+            item = self.attrs[var] if var in self.attrs else default
+            resfile = resFinder.getResourceFile( item ) if item is not None else None
+            if resfile is not None:
+                res[var] = makeRelative( resfile )
+
+        self.extraAttrs["res"] = res
+
 
     def getPageType( self ):
         if self._pageType is None:

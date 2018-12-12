@@ -14,12 +14,11 @@ publish: false
 [*] Define a ~~template~~ page type for subtrees
 	* ~~childTemplate~~ //childType// - the default ~~template~~ page type for all the descendants
 [*] Templates should be able to use translated texts
-[ ] Add 'index' type that generates a list of children of a page. Similar to 'news' but finds children only.
 [*] Support multiple translated variables in a single line
 [*] Multiple links to markdown pages must be converted to links to html in a single line when preprocessing markdown
 [ ] The format of the date for active news items should be configurable
 [*] The links in the excerpts are broken; when preparing excerpts, ~~make (markdown) links absolute and mark them for processing later if necessary~~. The links can be made relative to the index page.
-[ ] Create an index of //news.index// pages that will be displayed besides the news in every news page
+[*] Create an index of //news.index// pages that will be displayed besides the news in every news page
 	* A subtype (//childType//) must be defined for descendants so that the index can be displayed in them
 	* An ancestor must have a page type whose processor is NewsPageProcessor
 	* //news.archive// type may not be required any more
@@ -28,8 +27,12 @@ publish: false
 	* template filename extension
 	* extensions of other files that depend on the page type and are used by the templates
 [*] @bug Only one notebook can be exported if multiple notebooks are open
-[x] Adjust links to template resources in templates [@href banner-image banner.jpeg @] -> templateProcessor.hrefVars
-	* css url can be used, instead
+[*] Adjust links to template resources in templates [@res banner-image banner.jpeg @] -> templateProcessor.resourceVars
+	* css url() can be used, instead; problems:
+		* the image is a background so it does not have any size
+		* it is hard to change the image for a page unless we use a different css (via //template//, but this causes other problems)
 
 TODO: @maybe
 [ ] define the order of fall-back transaltions when a translation for the current language does not exist
+[ ] Add 'index' type that generates a list of children of a page. Similar to 'news' but finds children only.
+

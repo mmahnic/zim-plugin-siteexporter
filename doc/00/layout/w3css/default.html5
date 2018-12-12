@@ -3,6 +3,7 @@
 [@include htmlhead.htmli@]
 <body>
 <div class="w3-black banner">&nbsp;</div>
+$if(sx.res.hero-image)$<img src="[@res hero-image @]">$endif$
 $for(include-before)$
 $include-before$
 $endfor$

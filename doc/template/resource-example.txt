@@ -1,0 +1,10 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2018-12-12T20:55:02+01:00
+
+====== Template resource example ======
+---
+hero-image: zim-banner.jpg
+---
+
+This page has a double banner. The first is the default banner of the default.html5 template. The second is the image inserted with the ''$if(sx.res.hero-image)$<img src="[@res hero-image @]">$endif$'' directive in the template using the value of the //hero-image// variable from this page.
