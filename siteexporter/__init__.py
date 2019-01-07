@@ -14,9 +14,47 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+import logging
+logger = logging.getLogger('zim.plugins.siteexporter')
+
 from zim.plugins import PluginClass, WindowExtension, extends
 from zim.actions import action
 from zim.applications import Application
+
+from zim.notebook import Notebook, Path, resolve_notebook, build_notebook
+try:
+    from zim.command import Command
+    from zim.ipc import start_server_if_not_running, ServerProxy
+    class ZimInterface:
+        def __init__(self, notebookInfo):
+            start_server_if_not_running()
+            self.server = ServerProxy()
+            self.ui = server.get_notebook(notebookInfo, False)
+            self.notebook = self.ui.notebook
+
+except:
+    from zim.main.command import GtkCommand as Command
+    from zim.main import ZIM_APPLICATION
+    class ZimInterface:
+        def __init__(self, notebookInfo):
+            self.notebook = None
+            self.server = ZIM_APPLICATION
+            for win in ZIM_APPLICATION._windows:
+                if win.ui.notebook.uri == notebookInfo.uri:
+                    self.ui = win.ui
+                    self.notebook = self.ui.notebook
+                    logger.debug( "Found the open notebook." )
+                    break
+
+            if self.notebook is None:
+                logger.debug( "The notebook is not open. Build one." )
+                self.notebook = build_notebook(notebookInfo)
+                if self.notebook is None:
+                    logger.warn( "No notebook. Could not build one." )
+                else:
+                    self.notebook = self.notebook[0]
+
 
 from .exporter import SiteExporter, pandoccmd
 from .exportdata import ExporterData
@@ -71,3 +109,12 @@ class MainWindowExtension(WindowExtension):
         exporter = SiteExporter(ExporterData(self.window.ui.notebook))
         exporter.export()
         pass
+
+
+class SiteExporterCommand(Command):
+    def run(self):
+        # print(self.opts, self.args, dir(self))
+        notebookInfo = resolve_notebook(self.args[0])
+        zi = ZimInterface( notebookInfo )
+        exporter = SiteExporter(ExporterData(zi.notebook))
+        exporter.export()
