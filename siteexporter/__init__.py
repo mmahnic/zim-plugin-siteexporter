@@ -38,22 +38,12 @@ except:
     from zim.main import ZIM_APPLICATION
     class ZimInterface:
         def __init__(self, notebookInfo):
-            self.notebook = None
             self.server = ZIM_APPLICATION
-            for win in ZIM_APPLICATION._windows:
-                if win.ui.notebook.uri == notebookInfo.uri:
-                    self.ui = win.ui
-                    self.notebook = self.ui.notebook
-                    logger.debug( "Found the open notebook." )
-                    break
-
+            self.notebook = build_notebook( notebookInfo )
             if self.notebook is None:
-                logger.debug( "The notebook is not open. Build one." )
-                self.notebook = build_notebook(notebookInfo)
-                if self.notebook is None:
-                    logger.warn( "No notebook. Could not build one." )
-                else:
-                    self.notebook = self.notebook[0]
+                logger.warn( "No notebook. Could not build one." )
+            else:
+                self.notebook = self.notebook[0]
 
 
 from .exporter import SiteExporter, pandoccmd

@@ -24,8 +24,7 @@ lerror = logging.error
 
 class Translations:
     """Read translations from YAML attributes of lang-xx pages stored
-       in current configuration an current layout tree."""
-    # TODO: What is the best place to store translations?
+       in the current configuration and layout trees."""
 
     def __init__( self, config ):
         self.config = config
