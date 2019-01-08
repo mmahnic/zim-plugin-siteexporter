@@ -26,5 +26,6 @@ class ExporterData:
         self.trans = Translations( self.config )
         self.now = datetime.datetime.now()
         self.pageTypeProcFactory = PageTypeProcessorFactory()
+        self.exportPath = "/tmp/site"
         ProcessorRegistry.registerPageTypes( self.pageTypeProcFactory )
 

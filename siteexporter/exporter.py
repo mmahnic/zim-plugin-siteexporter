@@ -32,7 +32,6 @@ lwarn = logging.warning
 lerror = logging.error
 
 pandoccmd = "pandoc"
-exportPath = sxpage.exportPath # FIXME: no globals
 
 class IndexEntry:
     def __init__( self, page ):
@@ -54,7 +53,7 @@ class SiteExporter:
         self.layout = None
         self.homepage = None
         self.templateProc = TemplateProcessor()
-        self.resourceFinder = ResourceFinder( self.config )
+        self.resourceFinder = ResourceFinder( self.config, self.exportData.exportPath )
 
 
     # from zim.export
@@ -78,7 +77,7 @@ class SiteExporter:
 
 
     def export(self):
-        exporter = self.build_notebook_exporter( exportPath, "Default" )
+        exporter = self.build_notebook_exporter( self.exportData.exportPath, "Default" )
         from zim.export.selections import AllPages
         pages = AllPages(self.exportData.notebook)
 
@@ -329,7 +328,7 @@ class SiteExporter:
             for url in cssurls:
                 ressrc = os.path.normpath( os.path.join( cssdir, url ) )
                 if os.path.exists( ressrc ) and not ressrc in resources:
-                    resources.add( os.path.relpath( ressrc, exportPath ) )
+                    resources.add( os.path.relpath( ressrc, self.exportData.exportPath ) )
                     if url.endswith( ".css" ):
                         recurseCssLinks( url, cssdir, resources )
 
@@ -340,7 +339,7 @@ class SiteExporter:
             if not page.isPublished():
                 continue
 
-            pages.add( os.path.relpath( page.fullHtmlFilename(), exportPath ) )
+            pages.add( os.path.relpath( page.fullHtmlFilename(), self.exportData.exportPath ) )
 
             links = getHtmlLinks( page.fullHtmlFilename() )
             for link in links:
@@ -351,7 +350,7 @@ class SiteExporter:
                 if not os.path.exists( ressrc ):
                     continue
 
-                resources.add( os.path.relpath( ressrc, exportPath ) )
+                resources.add( os.path.relpath( ressrc, self.exportData.exportPath ) )
 
                 if link.endswith( ".css" ):
                     recurseCssLinks( link, htmldir, resources )
@@ -368,7 +367,7 @@ class SiteExporter:
 
         # Copy the discovered pages and resources
         for res in filesToCopy:
-            ressrc = os.path.join( exportPath, res )
+            ressrc = os.path.join( self.exportData.exportPath, res )
             resdst = os.path.join( pubdir, res )
             if not os.path.exists( os.path.dirname( resdst ) ):
                 os.makedirs( os.path.dirname( resdst ) )

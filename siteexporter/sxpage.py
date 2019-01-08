@@ -27,7 +27,6 @@ lerror = logging.error
 
 mkdExtension = "markdown"
 htmlExtension = "html"
-exportPath = "/tmp/site" # TODO: depends on the system, may be configured by the user, may include notebook name
 
 class MarkdownPage:
     def __init__( self, zimPage, exportData ):
@@ -65,10 +64,10 @@ class MarkdownPage:
 
 
     def fullFilename(self):
-        return os.path.join(exportPath, self.filename)
+        return os.path.join(self.exportData.exportPath, self.filename)
 
     def fullHtmlFilename(self):
-        return os.path.join(exportPath, self.htmlFilename)
+        return os.path.join(self.exportData.exportPath, self.htmlFilename)
 
     def parentId( self, levels=1 ):
         return ":".join( self.path[:-levels] )
@@ -215,7 +214,7 @@ class MarkdownPage:
         def makeRelative( path ):
             return os.path.relpath( path, curDir )
 
-        resFinder = ResourceFinder( self.exportData.config )
+        resFinder = ResourceFinder( self.exportData.config, self.exportData.exportPath )
         res = {}
         for var,default in resourceVars.items():
             item = self.attrs[var] if var in self.attrs else default

@@ -16,11 +16,10 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import os
 
-exportPath = "/tmp/site" # FIXME: No globals. This is the same as sxpage exportPath.
-
 class ResourceFinder:
-    def __init__( self, config ):
+    def __init__( self, config, exportPath ):
         self.config = config
+        self.exportPath = exportPath
         self.layout = None
 
     def layoutPath( self ):
@@ -31,7 +30,7 @@ class ResourceFinder:
         if self.layout is None:
             raise Exception( "Value 'layout' is not defined on the config page '{}'.".format( self.config.name ) )
 
-        return os.path.join( exportPath, *self.layout.split(":") )
+        return os.path.join( self.exportPath, *self.layout.split(":") )
 
     # Layout file: template, css, ...
     def _discoverLayoutFile( self, page, ext ):
