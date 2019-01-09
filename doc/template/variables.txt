@@ -15,7 +15,7 @@ When the exporter processes a page it generates a dictionary with variables that
 	* //link// - A link to the page. The link is relative to the page that is being exported.
 	* //items// - The list of items of a submenu. Exists only when a submenu exists.
 * //sx.tr// - The dictionary with the translated template variables.
-* sx.res - The dictionary with page-relative paths to custom resurce files from the layout used by the template.
+* //sx.res// - The dictionary with page-relative paths to custom resurce files from the layout used by the template.
 * //sx.home// - A link to the home page. The link is relative to the page that is being exported. The value is calculated from the //home// attribute in the [[:configuration|configuration]].
 * //sx.main-css// - A link to the main CSS. The link is relative to the page that is being exported.
 * //sx.meta-title// - The //metaTitle// ([[:attribute|attribute]]) of the page with added //titlePrefix// and //titleSuffix// ([[:configuration|configuration]]).

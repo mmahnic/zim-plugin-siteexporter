@@ -17,7 +17,9 @@
 from config import getActiveConfiguration
 from translation import Translations
 from processorfactory import PageTypeProcessorFactory, ProcessorRegistry
+from zim.newfs import get_tmpdir
 import datetime
+import os, re
 
 class ExporterData:
     def __init__( self, notebook ):
@@ -26,6 +28,24 @@ class ExporterData:
         self.trans = Translations( self.config )
         self.now = datetime.datetime.now()
         self.pageTypeProcFactory = PageTypeProcessorFactory()
-        self.exportPath = "/tmp/site"
+        self._exportPath = self._makeExportPath( notebook )
         ProcessorRegistry.registerPageTypes( self.pageTypeProcFactory )
 
+    def exportPath( self ):
+        return self._exportPath
+
+    def _makeExportPath( self, notebook ):
+        name = notebook.name
+        if name is None or name == "":
+            dirname = notebook.dir
+            if dirname is not None:
+                name = os.path.basename( dirname )
+
+        if name is not None:
+            name = filter( lambda c: c.isalnum(), name )
+
+        if name is None or name == "":
+            name = "Unknown"
+
+        root = get_tmpdir().encodedpath
+        return os.path.join( root, "sx-site", name )

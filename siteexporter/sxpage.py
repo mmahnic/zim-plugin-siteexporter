@@ -64,10 +64,10 @@ class MarkdownPage:
 
 
     def fullFilename(self):
-        return os.path.join(self.exportData.exportPath, self.filename)
+        return os.path.join(self.exportData.exportPath(), self.filename)
 
     def fullHtmlFilename(self):
-        return os.path.join(self.exportData.exportPath, self.htmlFilename)
+        return os.path.join(self.exportData.exportPath(), self.htmlFilename)
 
     def parentId( self, levels=1 ):
         return ":".join( self.path[:-levels] )
@@ -214,7 +214,7 @@ class MarkdownPage:
         def makeRelative( path ):
             return os.path.relpath( path, curDir )
 
-        resFinder = ResourceFinder( self.exportData.config, self.exportData.exportPath )
+        resFinder = ResourceFinder( self.exportData.config, self.exportData.exportPath() )
         res = {}
         for var,default in resourceVars.items():
             item = self.attrs[var] if var in self.attrs else default
