@@ -18,6 +18,20 @@
 import logging
 logger = logging.getLogger('zim.plugins.siteexporter')
 
+def winRegisterExtraModules():
+    # On Windows the following modules must be copied to winmodules:
+    #    - pyyaml:   copy lib/yaml/* to winmodules/yaml/
+    #    - dateutil: copy dateutil/* to winmodules/dateutil/
+    #    - six:      copy six.py to winmodules/
+    #
+    # ${APPDATA}/zim/data/zim/plugins/siteexporter/winmodules
+    import os, sys
+    modules = os.path.join(os.path.dirname(__file__), "winmodules")
+    if os.path.exists( modules ):
+        sys.path.append( modules )
+
+winRegisterExtraModules()
+
 from zim.plugins import PluginClass, WindowExtension, extends
 from zim.actions import action
 from zim.applications import Application
