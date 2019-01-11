@@ -22,8 +22,7 @@ from pageattributes import loadYamlAttributes
 from resourcefinder import ResourceFinder
 
 import logging
-lwarn = logging.warning
-lerror = logging.error
+logger = logging.getLogger('zim.plugins.siteexporter.sxpage')
 
 mkdExtension = "markdown"
 htmlExtension = "html"
@@ -105,7 +104,7 @@ class MarkdownPage:
 
     def setAttributes( self, attrs ):
         if type(attrs) != type({}):
-            lwarn( "Attributes are not a dictionary. Page: '{}'".format( self.id ) )
+            logger.warning( "Attributes are not a dictionary. Page: '{}'".format( self.id ) )
             attrs = {}
 
         self.attrs = attrs

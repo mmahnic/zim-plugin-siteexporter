@@ -55,7 +55,7 @@ except:
             self.server = ZIM_APPLICATION
             self.notebook = build_notebook( notebookInfo )
             if self.notebook is None:
-                logger.warn( "No notebook. Could not build one." )
+                logger.warning( "No notebook. Could not build one." )
             else:
                 self.notebook = self.notebook[0]
 

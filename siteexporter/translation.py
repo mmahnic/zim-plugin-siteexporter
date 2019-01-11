@@ -19,8 +19,7 @@ from pageattributes import loadYamlAttributes
 import locale
 
 import logging
-lwarn = logging.warning
-lerror = logging.error
+logger = logging.getLogger('zim.plugins.siteexporter.translation')
 
 class Translations:
     """Read translations from YAML attributes of lang-xx pages stored
@@ -71,8 +70,8 @@ class Translations:
             attrs = loadYamlAttributes( zimLangPage )
             for k,v in attrs.items():
                 tr[k] = v
-            lwarn( "Found page: {}".format( langPageId ) )
+            logger.debug( "Found page: {}".format( langPageId ) )
         else:
-            lwarn( "No such page: {}".format( langPageId ) )
+            logger.warning( "No such page: {}".format( langPageId ) )
 
         return tr

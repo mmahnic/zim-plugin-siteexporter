@@ -28,8 +28,7 @@ from resourcefinder import ResourceFinder
 import sxpage
 
 import logging
-lwarn = logging.warning
-lerror = logging.error
+logger = logging.getLogger('zim.plugins.siteexporter.exporter')
 
 pandoccmd = "pandoc"
 
@@ -86,10 +85,10 @@ class SiteExporter:
 
         # The iterator returns the page BEFORE it is exported
 	for p in exporter.export_iter(pages):
-            lwarn( "Exporting: {}: {}".format( type(p), p ) )
+            logger.debug( "Exporting: {}: {}".format( type(p), p ) )
 
 	for page in self.mkdPages:
-            lwarn( "Process: {}".format( page ) )
+            logger.debug( "Process: {}".format( page ) )
             self.processExportedPage( page )
 
 	for page in self.mkdPages:
@@ -294,7 +293,7 @@ class SiteExporter:
             outpath = page.fullHtmlFilename()
             filenames = ["-o",  outpath, mkdpath ]
             cmd = command + [ "--template", template ] + filenames
-            lwarn( " ".join(cmd) )
+            logger.debug( " ".join(cmd) )
             subp.call(cmd)
 
 
