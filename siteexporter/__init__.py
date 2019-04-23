@@ -18,20 +18,6 @@
 import logging
 logger = logging.getLogger('zim.plugins.siteexporter')
 
-def winRegisterExtraModules():
-    # On Windows the following modules must be copied to winmodules:
-    #    - pyyaml:   copy lib/yaml/* to winmodules/yaml/
-    #    - dateutil: copy dateutil/* to winmodules/dateutil/
-    #    - six:      copy six.py to winmodules/
-    #
-    # ${APPDATA}/zim/data/zim/plugins/siteexporter/winmodules
-    import os, sys
-    modules = os.path.join(os.path.dirname(__file__), "winmodules")
-    if os.path.exists( modules ):
-        sys.path.append( modules )
-
-winRegisterExtraModules()
-
 from zim.plugins import PluginClass, WindowExtension, extends
 from zim.actions import action
 from zim.applications import Application
@@ -59,34 +45,59 @@ except:
             else:
                 self.notebook = self.notebook[0]
 
+import os, sys, platform
+is_windows = platform.system() == "Windows"
+try:
+    if is_windows:
+        def winRegisterExtraModules():
+            modules = os.path.join(os.path.dirname(__file__), "winmodules")
+            if os.path.exists( modules ):
+                sys.path.append( modules )
+        winRegisterExtraModules()
 
-from .exporter import SiteExporter, pandoccmd
-from .exportdata import ExporterData
+    from .exporter import SiteExporter, pandoccmd
+    from .exportdata import ExporterData
 
-# This will register the news processors with the processor registry.
-import news
-
-try: import yaml
-except: yaml = None
-try: import dateutil
-except: dateutil = None
-try: import six
-except: six = None
+    # This will register the news processors with the processor registry.
+    import news
+except:
+    pass
 
 class SiteExporterPlugin( PluginClass ):
-    plugin_info = {
-        'name': _('Site Exporter'),
-        'description': _('''\
+    global is_windows
+    descr = _('''\
 This plugin will export a notebook as markdown and process the exported \
 pages with pandoc.  Notebook pages can have YAML attributes and a \
 different pandoc template can be selected to render each page based \
-on the values of these attributes.'''),
+on the values of these attributes.''')
+    if is_windows:
+        descr = descr + _('''\
+
+On Windows the following modules must be copied to winmodules:
+   - pyyaml:   copy lib/yaml/* to winmodules/yaml/
+   - dateutil: copy dateutil/* to winmodules/dateutil/
+   - six:      copy six.py to winmodules/
+
+The path to winmodules is:
+   ${APPDATA}/zim/data/zim/plugins/siteexporter/winmodules
+''')
+
+    plugin_info = {
+        'name': _('Site Exporter'),
+        'description': descr,
         'author': 'Marko Mahnič',
         'help': '',
         }
 
     @classmethod
     def check_dependencies(klass):
+        try: import yaml
+        except: yaml = None
+        try: import dateutil
+        except: dateutil = None
+        try: import six
+        except: six = None
+
         has_pandoc = Application(pandoccmd).tryexec()
         has_pyyaml = yaml is not None
         has_dateutil = dateutil is not None
