@@ -66,10 +66,12 @@ from .exportdata import ExporterData
 # This will register the news processors with the processor registry.
 import news
 
-try:
-    import yaml
-except:
-    yaml = None
+try: import yaml
+except: yaml = None
+try: import dateutil
+except: dateutil = None
+try: import six
+except: six = None
 
 class SiteExporterPlugin( PluginClass ):
     plugin_info = {
@@ -87,9 +89,13 @@ on the values of these attributes.'''),
     def check_dependencies(klass):
         has_pandoc = Application(pandoccmd).tryexec()
         has_pyyaml = yaml is not None
-        return all([has_pandoc, has_pyyaml]), [
+        has_dateutil = dateutil is not None
+        has_six = six is not None
+        return all([has_pandoc, has_pyyaml, has_dateutil, has_six]), [
                 ("Pandoc", has_pandoc, True),
-                ("pyyaml", has_pyyaml, True)
+                ("pyyaml", has_pyyaml, True),
+                ("dateutil", has_pyyaml, True),
+                ("six", has_pyyaml, True)
                 ]
 
 
