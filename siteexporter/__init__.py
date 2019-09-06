@@ -105,8 +105,8 @@ The path to winmodules is:
         return all([has_pandoc, has_pyyaml, has_dateutil, has_six]), [
                 ("Pandoc", has_pandoc, True),
                 ("pyyaml", has_pyyaml, True),
-                ("dateutil", has_pyyaml, True),
-                ("six", has_pyyaml, True)
+                ("dateutil", has_dateutil, True),
+                ("six", has_six, True)
                 ]
 
 
