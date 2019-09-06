@@ -4,3 +4,4 @@ Creation-Date: 2019-09-06T21:41:53+02:00
 
 ====== Zim Site Exporter ======
 
+The code: https://github.com/mmahnic/zim-plugin-siteexporter
