@@ -1,0 +1,16 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2019-09-06T20:36:53+02:00
+
+====== Initial import ======
+---
+createDate: 2018-10-30T21:17:22+01:00
+---
+'''
+commit c053136e4b98d66c3103ed5baba99506ea931563
+Author: Marko Mahnič
+Date:   Tue Oct 30 19:41:00 2018 +0100
+
+    Initial import
+'''
+

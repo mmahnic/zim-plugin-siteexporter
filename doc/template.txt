@@ -5,6 +5,7 @@ Creation-Date: 2018-11-20T21:42:23+01:00
 ====== Templates ======
 ---
 menu: Templates
+weight: 50
 ---
 
 The pages are exported from Zim to a temporary location with the default Markdown template.

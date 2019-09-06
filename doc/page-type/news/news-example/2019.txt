@@ -1,0 +1,10 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2019-09-06T20:43:25+02:00
+
+====== 2019 ======
+---
+createDate: 2019-01-01T21:17:22+01:00
+type: news.index
+publish: true
+---

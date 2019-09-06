@@ -1,0 +1,55 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2019-09-06T21:11:15+02:00
+
+====== Installation ======
+---
+menu: "Installation"
+weight: 100
+---
+
+The plugin was tested only with Zim 0.68 on Linux and Windows. If the plugin installs correctly the entry "Export Site" will be present in the Tools menu.
+
+===== Prerequisites =====
+* Pandoc application
+* Python modules: pyyaml, dateutil, six
+
+==== Windows prerequisites ====
+It is not possible to install additional Python modules to the "compiled" version of Zim for Windows so a workaround is used: 
+
+	On Windows the following modules must be manually copied to ''winmodules'' from the modules installed in a normal Python 2.7 installation or a virtual environment:
+	   - pyyaml:   copy lib/yaml/* to winmodules/yaml/
+	   - dateutil: copy dateutil/* to winmodules/dateutil/
+	   - six:      copy six.py to winmodules/
+	
+	The path to ''winmodules'' is:
+	   %APPDATA%/zim/data/zim/plugins/siteexporter/winmodules
+
+
+===== Installation =====
+Copy the Python code to the Zim plugin directory. The following script can be executed on Linux from the siteexporter subdirectory:
+
+**publish.sh**
+'''
+#!/usr/bin/env bash
+
+zimdir="~/.local/share/zim"
+zimdir="${zimdir/#\~/$HOME}"
+plugdir=${zimdir}/plugins
+siteexdir=${plugdir}/siteexporter
+
+if [ ! -d ${zimdir} ]; then
+   echo "Local Zim directory not found. Is Zim installed?"
+   exit 1
+fi
+
+if [ ! -d ${siteexdir} ]; then
+   mkdir -p ${siteexdir}
+fi
+
+echo "Copying to ${siteexdir}"
+cp *.py ${siteexdir}/
+'''
+
+
+

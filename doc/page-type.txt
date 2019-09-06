@@ -5,6 +5,7 @@ Creation-Date: 2018-11-20T20:49:55+01:00
 ====== Page Type ======
 ---
 menu: Page Type
+weight: 40
 ---
 
 The page type is specified in the page attribute //type//. If this attribute is not set on a page, the exporter will use the value of the attribute //childType// from parent pages. If //childType// is not found in parent pages, the page will have the default page type.

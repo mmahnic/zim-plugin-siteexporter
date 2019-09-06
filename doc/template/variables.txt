@@ -18,12 +18,12 @@ When the exporter processes a page it generates a dictionary with variables that
 * //sx.res// - The dictionary with page-relative paths to custom resurce files from the layout used by the template.
 * //sx.home// - A link to the home page. The link is relative to the page that is being exported. The value is calculated from the //home// attribute in the [[:configuration|configuration]].
 * //sx.main-css// - A link to the main CSS. The link is relative to the page that is being exported.
-* //sx.meta-title// - The //metaTitle// ([[:attribute|attribute]]) of the page with added //titlePrefix// and //titleSuffix// ([[:configuration|configuration]]).
+* //sx.meta-title// - The //metaTitle// ([[:content:attribute|attribute]]) of the page with added //titlePrefix// and //titleSuffix// ([[:configuration|configuration]]).
 * //sx.news-activeitems//: Generated for pages of type '//news//' and contains the list of page's children that are published and not expired. Each child is described with a dictionary:
 	* //id// - The Zim id of the page.
 	* //title// - The title of the page.
 	* //link// - A link to the child page. The link is relative to the page that is being exported.
-	* //brief// - The brief text ([[:excerpt|excerpt]]) of the child page.
+	* //brief// - The brief text ([[:content:excerpt|excerpt]]) of the child page.
 	* //date// - The date the page was published.
 
 Other entries in ''sx'' are the variables from the original page that were not redefined by the exporter.

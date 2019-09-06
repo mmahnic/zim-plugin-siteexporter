@@ -1,0 +1,11 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2019-09-06T20:51:29+02:00
+
+====== Content ======
+---
+menu: "Content"
+weight: 30
+---
+
+The content of the page will be exported as Markdown with YAML attributes and processed by Pandoc. The exported resources will be copied to the final location if they are referenced by the Markdown page. This was not tested with any other plugins and may not work for all types of resources.

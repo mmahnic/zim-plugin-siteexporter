@@ -1,0 +1,17 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2019-09-06T20:38:42+02:00
+
+====== Template discovery ======
+---
+createDate: 2018-11-04T21:17:22+01:00
+---
+
+'''
+commit c0b70de9c088d474c9979e48f6a0febb80bdd920
+Author: Marko Mahnič
+Date:   Sun Nov 4 19:41:32 2018 +0100
+
+    Introduce layout directories and discover custom templates for pages
+'''
+

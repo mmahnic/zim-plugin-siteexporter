@@ -1,0 +1,16 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2019-09-06T20:45:43+02:00
+
+====== Reorganise initialization ======
+---
+createDate: 2019-04-23T21:17:22+01:00
+---
+'''
+commit 5b1eeebb4fbf39958f9207068e1b98c1b0561ffa (origin/master)
+Author: Marko Mahnič
+Date:   Tue Apr 23 20:42:24 2019 +0200
+
+    Reorganise initialisation, display instructions about windows modules
+'''
+

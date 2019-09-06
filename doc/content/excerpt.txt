@@ -9,7 +9,7 @@ menu: "Page Excerpt"
 
 A page excerpt is a short text extracted from the page that is used when building index pages.
 The exporter tries to generate an excerpt in the following order:
-	* The excerpt is the text from the start of the page to the line whose content is "//<!--more-->//".
+	* The excerpt is the text from the start of the page to the line whose content is ''"<!--more-->"''.
 	* The excerpt is the text from the beginning of the page to the first title after the page title.
 	* The excerpt are the first 300 characters of the page.
 

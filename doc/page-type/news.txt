@@ -13,3 +13,5 @@ menu: News
 Attributes:
 	* createDate, publishDate, expireDate, unpublishDate
 	* draft
+
+Example: [[+news-example|Git log]]
