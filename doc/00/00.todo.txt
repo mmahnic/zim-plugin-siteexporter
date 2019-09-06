@@ -33,6 +33,9 @@ publish: false
 		* it is hard to change the image for a page unless we use a different css (via //template//, but this causes other problems)
 
 TODO: @maybe
-[ ] define the order of fall-back transaltions when a translation for the current language does not exist
+[ ] Define the order of fall-back languages when a translation for the current language does not exist.
 [ ] Add 'index' type that generates a list of children of a page. Similar to 'news' but finds children only.
+[ ] Define the variables that are inherited by the descendants
+	* ''inheritance: hero-image, type''
+	* Name: inheritance, transmit, passDown...?
 
