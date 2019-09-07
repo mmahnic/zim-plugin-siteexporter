@@ -14,7 +14,7 @@ After the Markdown files are preporcessed in the temporary location, they are co
 ==== Pandoc template selection ====
 The exporter uses Pandoc to convert Markdown files to HTML5. The exporter expects the templates in the selected layout to have the extension '.html5'.
 A Pandoc template can be selected for each page. The exporter first checks if a specific template for a page exists. The name of the specific template is obtained from the //template// attribute.
-If a //type// attribute is defined for the page, the exporter checks if a template for the page type exists. The name of the page-type specific template is obtained by adding '@' to the beginnin and the end of the type name, eg. '@news@.html5'.
+If a //type// attribute is defined for the page, the exporter checks if a template for the page type exists. The name of the page-type specific template is obtained by adding '@' to the beginning and the end of the type name, eg. '@news@.html5'.
 If no specific templates are found, the template 'default.html5' is used.
 
 ==== Pandoc template preprocessing ====

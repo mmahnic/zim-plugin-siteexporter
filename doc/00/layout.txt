@@ -7,9 +7,5 @@ Creation-Date: 2018-11-04T18:15:24+01:00
 publish: false
 ---
 
-* Layouts for the generated site
-	* pandoc templates
-	* translations for the templates
-	* css files
-	* other files that go into site resources
+* [[:configuration:layout|Layout configuration]].
 

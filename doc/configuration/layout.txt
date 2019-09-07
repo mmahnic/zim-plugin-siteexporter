@@ -2,11 +2,22 @@ Content-Type: text/x-zim-wiki
 Wiki-Format: zim 0.4
 Creation-Date: 2018-11-25T12:14:33+01:00
 
-====== Layout ======
+====== Layout selection ======
 ---
-menu: "Layout"
+menu: "Layout selection"
 ---
 
 A layout defines a set of templates and resources that are used to generate the site.
-A layout is selected with the //layout// attribute of the current [[:configuration|configuration]].
 The layouts are usually stored under [[00:layout]].
+A layout may include:
+	* Pandoc templates.
+	* Translations for the templates.
+	* CSS files.
+	* Other files that go into site resources.
+
+To select a layout for the site:
+	* Define the //active// attribute on the //00:00.config// page to select the active configuration. The attribute represents a Zim path relative to //00:00.config//, for example with ''active: "example"'' we select the configuration page //00:00.config:example//.
+	* Define the //layout// attribute on the //00:00.config:example// page. The attribute represents an absolute Zim path to the page with the layout definition, for example ''layout: "00:layout:w3css"''.
+	* Define the [[:template|templates]] for the site as attachments of the page defined in the //layout// attribute.
+	* Define the [[translation|transaltions]] for the template variables in subpages of the layout page.
+

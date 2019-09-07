@@ -1,0 +1,19 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2019-09-07T10:49:41+02:00
+
+====== Configuration page attributes ======
+---
+menu: "Attributes"
+---
+
+Configuration attributes are defined in YAML blocks near the beginning of a page. Configuration attributes are inherited from parent pages. Attributes defined in a child page override the attributes defined in parent pages. Dictionary and list attributes are not merged. The top-level attribute is replaced with a new one, instead.
+
+* //lang//: the default language of the site. If the default language is not set in configuration and an exported page does not define the //lang// attribute, the current system locale language will be used.
+* //home//: an absolute Zim path to the page that is the homepage of the site.
+* //active//: a relative Zim path to the active configuration for the site exporter.
+* //titlePrefix//: the string to prepend to the meta-title value.
+* //titleSuffix//: the string to append to the meta-title value.
+* //layout//: an absolute Zim path to the layout that will be used to generate the site. This attribute is usually defined in the active configuration page.
+* //pbudir//: the directory where the site should be built. Relative paths are relative to the root directory of the notebook. The pages are first exported to a temporary directory where they are processed. The generated final files are copied to //pubdir// afterwards.
+
