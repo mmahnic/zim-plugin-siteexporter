@@ -3,10 +3,8 @@ Wiki-Format: zim 0.4
 Creation-Date: 2019-09-06T20:34:33+02:00
 
 ====== Git log ======
-Created petek 06 september 2019
-
 ---
-menu: "Git log"
+menu: "Example: Git log"
 newsDuration: 6m
 type: news
 childType: news.item

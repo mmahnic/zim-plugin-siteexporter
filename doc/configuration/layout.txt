@@ -8,7 +8,7 @@ menu: "Layout selection"
 ---
 
 A layout defines a set of templates and resources that are used to generate the site.
-The layouts are usually stored under [[00:layout]].
+The layouts are usually stored under //00:layout//.
 A layout may include:
 	* Pandoc templates.
 	* Translations for the templates.

@@ -9,7 +9,7 @@ menu: News
 
 * collect children
 * prepare a list of excerpts of published children
-* excerpt: up to <!--more--> or the first 300 charactres or up to the first heading
+* excerpt: up to ''<!--more-->'' or the first 300 charactres or up to the first heading
 Attributes:
 	* createDate, publishDate, expireDate, unpublishDate
 	* draft
